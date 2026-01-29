@@ -9,25 +9,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
+  // 🔥 Rubik Burned title
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#2f3e1f",
+    fontFamily: "RubikBurned",
+    fontSize: 32,
+    color: "#060606",
     marginBottom: 10,
+    letterSpacing: 2,
   },
-
-  zeroText: {
-    fontSize: 42,
-    fontWeight: "bold",
-    color: "#f39c12",
-    marginTop: 10,
-  },
-
-  wasteText: {
-    fontSize: 42,
-    fontWeight: "bold",
-    color: "#6b8e23",
-    marginBottom: 20,
+  regularText: {
+    fontFamily: "System",
+    fontSize: 32,
+    color: "#060606",
+    marginBottom: 10,
+    letterSpacing: 2,
   },
 
   imagePlaceholder: {
@@ -53,30 +48,54 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: "#5b7f2b",
-    paddingVertical: 15,
-    paddingHorizontal: 60,
-    borderRadius: 30,
+  backgroundColor: "#5b7f2b",
+  paddingVertical: 15,
+  borderRadius: 30,
+  width: "100%",       // make button take full container width
+  alignItems: "center",
   },
 
   buttonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "bold", // OK for system font
   },
-  input: {
-  width: "100%",
-  backgroundColor: "#fff",
-  padding: 15,
-  borderRadius: 10,
-  marginBottom: 15,
-  fontSize: 16,
-},
 
-footerText: {
-  marginTop: 20,
-  color: "#2f3e1f",
+  input: {
+    width: "100%",
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+
+  footerText: {
+    marginTop: 20,
+    color: "#2f3e1f",
+  },
+
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
+  },
+
+  backButtonText: {
+    fontSize: 16,
+    color: "#007AFF",
+  },
+  buttonSpacing: {
+  marginTop: 15,
 },
+  buttonScroll: {
+  backgroundColor: "#5b7f2b",
+  paddingVertical: 30,
+  borderRadius: 30,
+  width: "100%",       // make button take full container width
+  alignItems: "center",
+  },
 
 });
 

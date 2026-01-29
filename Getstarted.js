@@ -7,21 +7,21 @@ export default function Getstarted({ navigation }) {
     <View style={styles.container}>
       <StatusBar style="dark" />
 
-      <Text style={styles.title}>Welcome</Text>
+      <Text style={styles.regularText}>Welcome</Text>
 
       <View style={styles.imagePlaceholder}>
         <Text style={styles.placeholderText}>[ Illustration goes here ]</Text>
       </View>
 
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button, styles.buttonSpacing]}
         onPress={() => navigation.navigate("Start")}
       >
         <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button, styles.buttonSpacing]}
         onPress={() => navigation.navigate("Login")}
       >
         <Text style={styles.buttonText}>Log in</Text>
