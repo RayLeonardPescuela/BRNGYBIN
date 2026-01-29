@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, Image } from "react-native";
 import styles from "./styles";
 
 export default function StartScreen({ navigation }) {
@@ -9,8 +9,13 @@ export default function StartScreen({ navigation }) {
 
       <Text style={styles.title}>BARANGAY BIN</Text>
 
-      <View style={styles.imagePlaceholder}>
-        <Text style={styles.placeholderText}>[ Illustration goes here ]</Text>
+      {/* Updated container for image */}
+      <View style={{ width: "100%", alignItems: "center", marginVertical: 20 }}>
+        <Image
+          source={require("./assets/zerowaste.png")}
+          style={{ width: "100%", height: 300 }} // ✅ fixed height works well
+          resizeMode="contain" // ✅ fits entire image
+        />
       </View>
 
       <Text style={styles.tagline}>Clean barangay starts with you!</Text>

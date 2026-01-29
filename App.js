@@ -7,6 +7,8 @@ import StartScreen from "./StartScreen";
 import Getstarted from "./Getstarted";
 import Login from "./Login";
 import Home from "./Home";
+import profile from "./profile"
+import chats from "./chats"
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +31,8 @@ export default function App() {
         <Stack.Screen name="Getstarted" component={Getstarted} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="profile" component={profile} />
+        <Stack.Screen name="chats" component={chats} />
       </Stack.Navigator>
     </NavigationContainer>
   );

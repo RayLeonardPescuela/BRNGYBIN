@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./styles";
 
-export default function Register() {
+export default function Login() {
   const navigation = useNavigation();
 
   return (
@@ -21,9 +21,12 @@ export default function Register() {
       {/* Title */}
       <Text style={styles.regularText}>Log in</Text>
 
+      {/* Inputs */}
       <TextInput
         style={styles.input}
         placeholder="Email"
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <TextInput
@@ -32,10 +35,11 @@ export default function Register() {
         secureTextEntry
       />
 
-      {/* Register Button */}
+      {/* Sign In Button */}
       <TouchableOpacity 
         style={[styles.button, styles.buttonSpacing]}
-        onPress={() => navigation.navigate("Home")}>
+        onPress={() => navigation.navigate("Home")}  // make sure Stack.Screen name is "Home"
+      >
         <Text style={styles.buttonText}>Sign in</Text>
       </TouchableOpacity>
     </View>

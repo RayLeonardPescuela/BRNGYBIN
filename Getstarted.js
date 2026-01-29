@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, Image } from "react-native";
 import styles from "./styles";
 
 export default function Getstarted({ navigation }) {
@@ -9,10 +9,16 @@ export default function Getstarted({ navigation }) {
 
       <Text style={styles.regularText}>Welcome</Text>
 
-      <View style={styles.imagePlaceholder}>
-        <Text style={styles.placeholderText}>[ Illustration goes here ]</Text>
+      {/* Illustration */}
+      <View style={{ width: "100%", alignItems: "center", marginVertical: 20 }}>
+        <Image
+          source={require("./assets/garbagetruck.png")} // ✅ replace with your image
+          style={{ width: "100%", height: 300 }}       // big image
+          resizeMode="contain"                        // full image visible
+        />
       </View>
 
+      {/* Buttons */}
       <TouchableOpacity
         style={[styles.button, styles.buttonSpacing]}
         onPress={() => navigation.navigate("Start")}
