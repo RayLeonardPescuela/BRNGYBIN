@@ -1,0 +1,151 @@
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Navbar from "./Navbar";
+
+export default function SegregationGuide({ navigation }) {
+  const [selectedType, setSelectedType] = useState("Biodegradable");
+
+  // Data for the different waste types
+  const wasteTypes = [
+    { id: "1", name: "Biodegradable", icon: "leaf" },
+    { id: "2", name: "Recyclable", icon: "recycle" },
+    { id: "3", name: "Non-Biodegradable", icon: "bottle-wine-outline" },
+    { id: "4", name: "E-Waste", icon: "cellphone-cog" },
+    { id: "5", name: "Hazardous", icon: "skull-crossbones" },
+  ];
+
+  const content = {
+    Biodegradable: "Biodegradable waste includes any organic matter in waste which can be broken down into carbon dioxide, water, methane or simple organic molecules by micro-organisms and other living things by composting, aerobic digestion, anaerobic digestion or similar processes.",
+    Recyclable: "Recyclable materials include many kinds of glass, paper, cardboard, metal, plastic, tires, textiles, batteries, and electronics.",
+    "Non-Biodegradable": "Non-biodegradable waste is a type of waste that cannot be broken down by biological processes. Examples include plastics, glass, and metals.",
+    "E-Waste": "Electronic waste or e-waste describes discarded electrical or electronic devices. Used electronics which are destined for refurbishment, reuse, resale, or salvage recycling.",
+    Hazardous: "Hazardous waste is waste that has substantial or potential threats to public health or the environment. It is often ignitable, reactive, or toxic.",
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <MaterialCommunityIcons name="chevron-double-left" size={35} color="#4A90E2" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Segregation Guide</Text>
+      </View>
+
+      <View style={styles.divider} />
+
+      {/* Horizontal Scrollable Circle Buttons */}
+      <View style={styles.scrollWrapper}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          {wasteTypes.map((item) => (
+            <View key={item.id} style={styles.itemWrapper}>
+              <TouchableOpacity
+                style={[
+                  styles.circleButton,
+                  selectedType === item.name && styles.activeCircle,
+                ]}
+                onPress={() => setSelectedType(item.name)}
+              >
+                <MaterialCommunityIcons 
+                  name={item.icon} 
+                  size={50} 
+                  color={selectedType === item.name ? "#FFF" : "#7CB342"} 
+                />
+              </TouchableOpacity>
+              <Text style={styles.circleLabel}>{item.name}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Content Area */}
+      <View style={styles.infoCard}>
+        <Text style={styles.infoText}>{content[selectedType]}</Text>
+      </View>
+
+      <Navbar />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#C5D8A4",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+  },
+  headerTitle: {
+    fontSize: 26,
+    fontFamily: "serif",
+    marginLeft: 10,
+  },
+  divider: {
+    height: 2,
+    backgroundColor: "#4A90E2",
+    marginHorizontal: 0,
+    marginBottom: 20,
+  },
+  scrollWrapper: {
+    height: 160,
+  },
+  scrollContent: {
+    paddingHorizontal: 15,
+    alignItems: "center",
+  },
+  itemWrapper: {
+    alignItems: "center",
+    marginHorizontal: 10,
+  },
+  circleButton: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  activeCircle: {
+    backgroundColor: "#7CB342",
+    borderWidth: 2,
+    borderColor: "#FFF",
+  },
+  circleLabel: {
+    marginTop: 8,
+    fontSize: 14,
+    fontFamily: "serif",
+    textAlign: "center",
+  },
+  infoCard: {
+    backgroundColor: "#FFF",
+    margin: 20,
+    padding: 25,
+    borderRadius: 15,
+    minHeight: 250,
+    elevation: 2,
+  },
+  infoText: {
+    fontSize: 18,
+    fontFamily: "serif",
+    lineHeight: 28,
+    textAlign: "justify",
+  },
+});
