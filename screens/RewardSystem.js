@@ -1,9 +1,12 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Image } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
+import { useUser } from "../config/UserContext";
 
 export default function RewardSystem({ navigation }) {
+  const { userData } = useUser();
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -23,7 +26,7 @@ export default function RewardSystem({ navigation }) {
           <Text style={styles.pointsLabel}>Your Current Points</Text>
           <View style={styles.pointsRow}>
             <MaterialCommunityIcons name="star-circle" size={50} color="#FFD700" />
-            <Text style={styles.pointsValue}>1,250</Text>
+            <Text style={styles.pointsValue}>{userData?.points?.toLocaleString() || "0"}</Text>
           </View>
           <Text style={styles.pointsSubtext}>Keep recycling to earn more!</Text>
         </View>
@@ -38,7 +41,10 @@ export default function RewardSystem({ navigation }) {
 
         {/* Action Options */}
         <View style={styles.optionsContainer}>
-          <TouchableOpacity style={styles.rewardOption}>
+          <TouchableOpacity 
+            style={styles.rewardOption}
+            onPress={() => navigation.navigate("QRScanner")}
+          >
             <MaterialCommunityIcons name="qrcode-scan" size={40} color="black" />
             <View style={styles.optionTextWrapper}>
               <Text style={styles.optionTitle}>Scan for Points</Text>
@@ -47,7 +53,10 @@ export default function RewardSystem({ navigation }) {
             <Ionicons name="chevron-forward" size={24} color="black" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.rewardOption}>
+          <TouchableOpacity 
+            style={styles.rewardOption}
+            onPress={() => navigation.navigate("RedeemRewards")}
+          >
             <MaterialCommunityIcons name="gift-outline" size={40} color="black" />
             <View style={styles.optionTextWrapper}>
               <Text style={styles.optionTitle}>Redeem Rewards</Text>
@@ -78,7 +87,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 20 },
   headerTitle: { fontSize: 26, fontFamily: "serif", marginLeft: 10 },
   divider: { height: 1, backgroundColor: "#000", marginHorizontal: 20, marginVertical: 10 },
-  scrollContent: { paddingBottom: 120 },
+  scrollContent: { paddingBottom: 90 },
   
   pointsCard: {
     backgroundColor: "#3E5132",

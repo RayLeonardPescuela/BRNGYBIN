@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 export default function SegregationGuide({ navigation }) {
   const [selectedType, setSelectedType] = useState("Biodegradable");
@@ -117,11 +117,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     justifyContent: "center",
     alignItems: "center",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
   },
   activeCircle: {
     backgroundColor: "#7CB342",

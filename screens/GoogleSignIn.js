@@ -14,14 +14,14 @@ export default function GoogleSignIn({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Google Header */}
       <View style={styles.header}>
-        <Image source={require("./assets/google_logo.png")} style={styles.googleLogo} />
+        <Image source={require("../assets/google_logo.png")} style={styles.googleLogo} />
         <Text style={styles.headerText}>Sign in with Google</Text>
       </View>
       <View style={styles.line} />
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Trash Bin Illustration */}
-        <Image source={require("./assets/garbagecan.png")} style={styles.illustration} />
+        <Image source={require("../assets/garbagecan.png")} style={styles.illustration} />
 
         <Text style={styles.titleText}>Choose an account</Text>
         <Text style={styles.subText}>

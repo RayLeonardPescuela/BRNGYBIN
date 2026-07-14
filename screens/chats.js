@@ -2,7 +2,7 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { Text, View, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 export default function Chats({ navigation }) {
   const messages = [

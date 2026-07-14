@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "382158825703",
+    "project_id": "brngybinbackend",
+    "storage_bucket": "brngybinbackend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:382158825703:android:026ea25de404cf117e9a42",
+        "android_client_info": {
+          "package_name": "com.brngybin.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7yfigl2LK_AwV9eg5VRq_ir6bJk29H_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

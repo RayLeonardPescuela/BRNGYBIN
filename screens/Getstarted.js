@@ -11,7 +11,7 @@ export default function Getstarted({ navigation }) {
       {/* Top Illustration */}
       <View style={styles.illustrationContainer}>
         <Image
-          source={require("./assets/garbagetruck.png")} 
+          source={require("../assets/garbagetruck.png")} 
           style={styles.illustration}
           resizeMode="contain"
         />
@@ -24,7 +24,7 @@ export default function Getstarted({ navigation }) {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => navigation.navigate("Start")} // Navigate to registration
+          onPress={() => navigation.navigate("SignUp")}
         >
           <Text style={styles.buttonText}>Create Account</Text>
         </TouchableOpacity>

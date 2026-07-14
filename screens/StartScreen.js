@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { Text, View, TouchableOpacity, Image } from "react-native";
-import styles from "./styles";
+import styles from "../styles";
 
 export default function StartScreen({ navigation }) {
   return (
@@ -12,7 +12,7 @@ export default function StartScreen({ navigation }) {
       {/* Updated container for image */}
       <View style={{ width: "100%", alignItems: "center", marginVertical: 20 }}>
         <Image
-          source={require("./assets/zerowaste.png")}
+          source={require("../assets/zerowaste.png")}
           style={{ width: "100%", height: 300 }} // ✅ fixed height works well
           resizeMode="contain" // ✅ fits entire image
         />
