@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { Text, View, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Navbar from "../components/Navbar";
+import shared, { COLORS } from "../styles";
 
 export default function Chats({ navigation }) {
   const messages = [
@@ -61,68 +62,17 @@ export default function Chats({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF", // White background for the list
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    marginTop: 10,
-  },
-  editButton: {
-    backgroundColor: "#C5D8A4",
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 15,
-  },
-  editButtonText: {
-    fontSize: 18,
-    fontFamily: "serif",
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontFamily: "serif",
-  },
-  listContainer: {
-    paddingBottom: 100, // Space for Navbar
-  },
-  messageItem: {
-    flexDirection: "row",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
-    alignItems: "center",
-  },
-  avatar: {
-    marginRight: 10,
-  },
-  messageContent: {
-    flex: 1,
-  },
-  messageHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  senderName: {
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "serif",
-  },
-  timeText: {
-    fontSize: 12,
-    color: "#666",
-    fontFamily: "serif",
-  },
-  messageSnippet: {
-    fontSize: 14,
-    color: "#333",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
+  container: { flex: 1, backgroundColor: COLORS.white },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 15, marginTop: 10 },
+  editButton: { backgroundColor: COLORS.background, paddingHorizontal: 15, paddingVertical: 5, borderRadius: 15 },
+  editButtonText: { fontSize: 18, fontFamily: "sans-serif" },
+  headerTitle: { fontSize: 28, fontFamily: "sans-serif" },
+  listContainer: { paddingBottom: 100 },
+  messageItem: { flexDirection: "row", paddingHorizontal: 15, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.black, alignItems: "center" },
+  avatar: { marginRight: 10 },
+  messageContent: { flex: 1 },
+  messageHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  senderName: { fontSize: 16, fontWeight: "600", fontFamily: "sans-serif" },
+  timeText: { fontSize: 12, color: COLORS.textSecondary, fontFamily: "sans-serif" },
+  messageSnippet: { fontSize: 14, color: COLORS.textPrimary, fontFamily: "sans-serif", marginTop: 2 },
 });

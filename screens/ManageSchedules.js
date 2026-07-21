@@ -12,11 +12,13 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
 export default function ManageSchedules({ navigation }) {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState(null);
   const [newSchedule, setNewSchedule] = useState({
     type: "collection",
     date: "",
@@ -50,20 +52,41 @@ export default function ManageSchedules({ navigation }) {
     }
 
     try {
-      await db.collection("schedules").add({
-        type: newSchedule.type,
-        date: newSchedule.date,
-        time: newSchedule.time,
-        area: newSchedule.area,
-        status: "scheduled",
-        createdAt: new Date(),
-      });
+      if (editingSchedule) {
+        await db.collection("schedules").doc(editingSchedule.id).update({
+          type: newSchedule.type,
+          date: newSchedule.date,
+          time: newSchedule.time,
+          area: newSchedule.area,
+        });
+      } else {
+        await db.collection("schedules").add({
+          type: newSchedule.type,
+          date: newSchedule.date,
+          time: newSchedule.time,
+          area: newSchedule.area,
+          status: "scheduled",
+          createdAt: new Date(),
+        });
+      }
       setModalVisible(false);
+      setEditingSchedule(null);
       setNewSchedule({ type: "collection", date: "", time: "", area: "" });
       fetchSchedules();
     } catch (error) {
-      Alert.alert("Error", "Failed to add schedule");
+      Alert.alert("Error", "Failed to save schedule");
     }
+  };
+
+  const editSchedule = (schedule) => {
+    setEditingSchedule(schedule);
+    setNewSchedule({
+      type: schedule.type,
+      date: schedule.date,
+      time: schedule.time,
+      area: schedule.area,
+    });
+    setModalVisible(true);
   };
 
   const deleteSchedule = async (scheduleId) => {
@@ -102,9 +125,14 @@ export default function ManageSchedules({ navigation }) {
         <View style={[styles.statusBadge, { backgroundColor: item.status === "completed" ? "#4CAF50" : "#FFB74D" }]}>
           <Text style={styles.statusText}>{item.status}</Text>
         </View>
-        <TouchableOpacity onPress={() => deleteSchedule(item.id)}>
-          <MaterialCommunityIcons name="delete" size={22} color="#E57373" />
-        </TouchableOpacity>
+        <View style={styles.actionRow}>
+          <TouchableOpacity onPress={() => editSchedule(item)}>
+            <MaterialCommunityIcons name="pencil" size={20} color="#4A90E2" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => deleteSchedule(item.id)}>
+            <MaterialCommunityIcons name="delete" size={20} color="#E57373" />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -145,7 +173,7 @@ export default function ManageSchedules({ navigation }) {
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Schedule</Text>
+            <Text style={styles.modalTitle}>{editingSchedule ? "Edit Schedule" : "Add Schedule"}</Text>
 
             <Text style={styles.label}>Type</Text>
             <View style={styles.typeRow}>
@@ -194,7 +222,11 @@ export default function ManageSchedules({ navigation }) {
             <View style={styles.modalActions}>
               <TouchableOpacity
                 style={styles.cancelBtn}
-                onPress={() => setModalVisible(false)}
+                onPress={() => {
+                  setModalVisible(false);
+                  setEditingSchedule(null);
+                  setNewSchedule({ type: "collection", date: "", time: "", area: "" });
+                }}
               >
                 <Text style={styles.cancelBtnText}>Cancel</Text>
               </TouchableOpacity>
@@ -210,183 +242,37 @@ export default function ManageSchedules({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-    flex: 1,
-  },
-  addBtn: {
-    backgroundColor: "#6B8E4E",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#000",
-    marginHorizontal: 20,
-    marginBottom: 15,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#666",
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  scheduleCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 12,
-    elevation: 2,
-  },
-  scheduleIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#6B8E4E",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  scheduleInfo: {
-    flex: 1,
-  },
-  scheduleType: {
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  scheduleArea: {
-    fontSize: 14,
-    color: "#333",
-    fontFamily: "serif",
-  },
-  scheduleTime: {
-    fontSize: 12,
-    color: "#666",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
-  scheduleActions: {
-    alignItems: "flex-end",
-    gap: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: "bold",
-    color: "#FFF",
-    textTransform: "capitalize",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    paddingHorizontal: 30,
-  },
-  modalContent: {
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    padding: 25,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    fontFamily: "serif",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: "serif",
-    marginBottom: 5,
-    marginTop: 10,
-  },
-  input: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    fontFamily: "serif",
-  },
-  typeRow: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  typeBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-  },
-  typeBtnActive: {
-    backgroundColor: "#6B8E4E",
-  },
-  typeBtnText: {
-    fontFamily: "serif",
-    color: "#333",
-  },
-  typeBtnTextActive: {
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 25,
-    gap: 15,
-  },
-  cancelBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: "#EEE",
-    alignItems: "center",
-  },
-  cancelBtnText: {
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
-  saveBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: "#6B8E4E",
-    alignItems: "center",
-  },
-  saveBtnText: {
-    fontFamily: "serif",
-    fontWeight: "bold",
-    color: "#FFF",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10, flex: 1 }],
+  addBtn: { backgroundColor: COLORS.primary, width: 40, height: 40, borderRadius: 20, justifyContent: "center", alignItems: "center" },
+  divider: shared.divider,
+  center: shared.center,
+  loadingText: shared.loadingText,
+  listContent: { paddingHorizontal: 20, paddingBottom: 40 },
+  scheduleCard: [shared.card, { flexDirection: "row", alignItems: "center", marginBottom: 12 }],
+  scheduleIcon: { width: 50, height: 50, borderRadius: 25, backgroundColor: COLORS.primary, justifyContent: "center", alignItems: "center", marginRight: 12 },
+  scheduleInfo: { flex: 1 },
+  scheduleType: { fontSize: 16, fontWeight: "bold", fontFamily: "sans-serif" },
+  scheduleArea: { fontSize: 14, color: COLORS.textPrimary, fontFamily: "sans-serif" },
+  scheduleTime: { fontSize: 12, color: COLORS.textSecondary, fontFamily: "sans-serif", marginTop: 2 },
+  scheduleActions: { alignItems: "flex-end", gap: 8 },
+  actionRow: { flexDirection: "row", gap: 12 },
+  statusBadge: shared.statusBadge,
+  statusText: shared.statusBadgeText,
+  modalOverlay: shared.modalOverlay,
+  modalContent: shared.modalContent,
+  modalTitle: [shared.modalTitle, { textAlign: "center" }],
+  label: [shared.modalLabel, { marginTop: 10 }],
+  input: shared.modalInput,
+  typeRow: shared.typeRow,
+  typeBtn: { flex: 1, padding: 12, borderRadius: 10, backgroundColor: COLORS.inputBg, alignItems: "center" },
+  typeBtnActive: { backgroundColor: COLORS.primary },
+  typeBtnText: { fontFamily: "sans-serif", color: COLORS.textPrimary },
+  typeBtnTextActive: { color: COLORS.white, fontWeight: "bold" },
+  modalActions: shared.modalActions,
+  cancelBtn: shared.modalCancelBtn,
+  cancelBtnText: shared.modalCancelText,
+  saveBtn: shared.modalSaveBtn,
+  saveBtnText: shared.modalSaveText,
 });

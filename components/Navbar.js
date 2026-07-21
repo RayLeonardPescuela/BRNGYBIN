@@ -68,10 +68,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#999",
     fontWeight: "500",
+    fontFamily: "sans-serif",
   },
   activeLabel: {
     color: "#4A8C3F",
     fontWeight: "700",
+    fontFamily: "sans-serif",
   },
 });
 

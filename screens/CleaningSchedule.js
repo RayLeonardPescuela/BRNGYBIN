@@ -11,6 +11,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
 const colors = [
   { bgColor: "#3E5C3E", iconColor: "#A8D5BA" },
@@ -127,106 +128,23 @@ export default function CleaningSchedule({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  headerContainer: {
-    paddingTop: 40,
-    backgroundColor: "#C5D8A4",
-    zIndex: 10,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#000",
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontFamily: "serif",
-    color: "#666",
-  },
-  emptySubtext: {
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#999",
-  },
-  taskList: {
-    paddingTop: 20,
-    paddingBottom: 90,
-  },
-  circleContainer: {
-    marginVertical: 15,
-  },
-  alignLeft: {
-    alignItems: "flex-start",
-    paddingLeft: 20,
-  },
-  alignRight: {
-    alignItems: "flex-end",
-    paddingRight: 20,
-  },
-  taskCircle: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    overflow: "hidden",
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  areaTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginBottom: 5,
-  },
-  areaText: {
-    fontSize: 11,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  iconRow: {
-    marginBottom: 5,
-  },
-  scheduleLabel: {
-    color: "#FFF",
-    fontSize: 11,
-    fontFamily: "serif",
-    fontWeight: "600",
-    marginBottom: 5,
-    textAlign: "center",
-  },
-  timeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-  },
-  timeText: {
-    color: "#FFF",
-    fontSize: 9,
-    fontFamily: "serif",
-  },
+  container: shared.container,
+  headerContainer: { paddingTop: 40, backgroundColor: COLORS.background, zIndex: 10 },
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  divider: shared.divider,
+  center: shared.center,
+  emptyText: shared.emptyText,
+  emptySubtext: shared.emptySubtext,
+  taskList: { paddingTop: 20, paddingBottom: 90 },
+  circleContainer: { marginVertical: 15 },
+  alignLeft: { alignItems: "flex-start", paddingLeft: 20 },
+  alignRight: { alignItems: "flex-end", paddingRight: 20 },
+  taskCircle: { width: 220, height: 220, borderRadius: 110, justifyContent: "center", alignItems: "center", padding: 20, overflow: "hidden", elevation: 6, shadowColor: "#000", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 4 },
+  areaTag: { flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 5 },
+  areaText: { fontSize: 11, fontWeight: "bold", fontFamily: "sans-serif" },
+  iconRow: { marginBottom: 5 },
+  scheduleLabel: { color: COLORS.white, fontSize: 11, fontFamily: "sans-serif", fontWeight: "600", marginBottom: 5, textAlign: "center" },
+  timeRow: { flexDirection: "row", alignItems: "center", gap: 3 },
+  timeText: { color: COLORS.white, fontSize: 9, fontFamily: "sans-serif" },
 });

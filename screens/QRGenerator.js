@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
 export default function QRGenerator({ navigation }) {
   const [points, setPoints] = useState("");
@@ -161,150 +162,27 @@ export default function QRGenerator({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#000",
-    marginHorizontal: 20,
-    marginBottom: 15,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  inputSection: {
-    marginTop: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontFamily: "serif",
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
-  },
-  input: {
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    padding: 15,
-    fontSize: 16,
-    fontFamily: "serif",
-    marginBottom: 20,
-    elevation: 2,
-  },
-  generateBtn: {
-    flexDirection: "row",
-    backgroundColor: "#6B8E4E",
-    paddingVertical: 15,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-    elevation: 4,
-  },
-  generateBtnText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  qrSection: {
-    alignItems: "center",
-    marginTop: 20,
-  },
-  qrTitle: {
-    fontSize: 22,
-    fontFamily: "serif",
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  qrPoints: {
-    fontSize: 32,
-    fontFamily: "serif",
-    fontWeight: "bold",
-    color: "#6B8E4E",
-    marginBottom: 20,
-  },
-  qrContainer: {
-    backgroundColor: "#FFF",
-    padding: 20,
-    borderRadius: 20,
-    elevation: 5,
-    marginBottom: 15,
-  },
-  qrDesc: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#666",
-    marginBottom: 5,
-  },
-  qrExpiry: {
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#E57373",
-    marginBottom: 20,
-  },
-  infoCard: {
-    flexDirection: "row",
-    backgroundColor: "#E3F2FD",
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 25,
-    gap: 10,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#333",
-    lineHeight: 20,
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 15,
-  },
-  resetBtn: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "#FFF",
-    paddingVertical: 12,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    elevation: 2,
-  },
-  resetBtnText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    fontWeight: "600",
-  },
-  doneBtn: {
-    flex: 1,
-    backgroundColor: "#6B8E4E",
-    paddingVertical: 12,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  doneBtnText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontFamily: "serif",
-    fontWeight: "600",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  divider: shared.divider,
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
+  inputSection: { marginTop: 20 },
+  label: { fontSize: 16, fontFamily: "sans-serif", fontWeight: "600", marginBottom: 8, color: COLORS.textPrimary },
+  input: [shared.card, { padding: 15, marginBottom: 20 }],
+  generateBtn: [shared.primaryButton, { flexDirection: "row", justifyContent: "center", gap: 10 }],
+  generateBtnText: shared.primaryButtonText,
+  qrSection: { alignItems: "center", marginTop: 20 },
+  qrTitle: { fontSize: 22, fontFamily: "sans-serif", fontWeight: "bold", marginBottom: 5 },
+  qrPoints: { fontSize: 32, fontFamily: "sans-serif", fontWeight: "bold", color: COLORS.primary, marginBottom: 20 },
+  qrContainer: { backgroundColor: COLORS.white, padding: 20, borderRadius: 20, elevation: 5, marginBottom: 15 },
+  qrDesc: { fontSize: 16, fontFamily: "sans-serif", color: COLORS.textSecondary, marginBottom: 5 },
+  qrExpiry: { fontSize: 14, fontFamily: "sans-serif", color: COLORS.error, marginBottom: 20 },
+  infoCard: { flexDirection: "row", backgroundColor: COLORS.blue, borderRadius: 15, padding: 15, marginBottom: 25, gap: 10 },
+  infoText: { flex: 1, fontSize: 14, fontFamily: "sans-serif", color: COLORS.textPrimary, lineHeight: 20 },
+  actions: { flexDirection: "row", gap: 15 },
+  resetBtn: { flex: 1, flexDirection: "row", backgroundColor: COLORS.white, paddingVertical: 12, borderRadius: 25, justifyContent: "center", alignItems: "center", gap: 8, elevation: 2 },
+  resetBtnText: { fontSize: 16, fontFamily: "sans-serif", fontWeight: "600" },
+  doneBtn: [shared.primaryButton, { flex: 1, paddingVertical: 12, borderRadius: 25 }],
+  doneBtnText: [shared.primaryButtonText, { fontSize: 16 }],
 });

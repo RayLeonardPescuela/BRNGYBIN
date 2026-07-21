@@ -17,7 +17,6 @@ import ComplaintFeedback from "./screens/ComplaintFeedback";
 import SegregationGuide from "./screens/SegregationGuide";
 import CleaningSchedule from "./screens/CleaningSchedule";
 import RewardSystem from "./screens/RewardSystem";
-import GoogleSignIn from "./screens/GoogleSignIn";
 import SignUp from "./screens/SignUp";
 import AdminHome from "./screens/AdminHome";
 import ManageUsers from "./screens/ManageUsers";
@@ -29,6 +28,8 @@ import ManageRewards from "./screens/ManageRewards";
 import RedeemRewards from "./screens/RedeemRewards";
 import CreateNotification from "./screens/CreateNotification";
 import ManageAnnouncements from "./screens/ManageAnnouncements";
+import DeveloperKiosk from "./screens/DeveloperKiosk";
+import PointHistory from "./screens/PointHistory";
 
 const Stack = createNativeStackNavigator();
 
@@ -66,7 +67,6 @@ export default function App() {
           <Stack.Screen name="SegregationGuide" component={SegregationGuide} />
           <Stack.Screen name="CleaningSchedule" component={CleaningSchedule} />
           <Stack.Screen name="RewardSystem" component={RewardSystem} />
-          <Stack.Screen name="GoogleSignIn" component={GoogleSignIn} />
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="AdminHome" component={AdminHome} />
           <Stack.Screen name="ManageUsers" component={ManageUsers} />
@@ -78,6 +78,8 @@ export default function App() {
           <Stack.Screen name="RedeemRewards" component={RedeemRewards} />
           <Stack.Screen name="CreateNotification" component={CreateNotification} />
           <Stack.Screen name="ManageAnnouncements" component={ManageAnnouncements} />
+          <Stack.Screen name="DeveloperKiosk" component={DeveloperKiosk} />
+          <Stack.Screen name="PointHistory" component={PointHistory} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>

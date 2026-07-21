@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function ManageAnnouncements({ navigation }) {
   const { userData } = useUser();
@@ -195,104 +196,21 @@ export default function ManageAnnouncements({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-    flex: 1,
-  },
-  addButton: {
-    backgroundColor: "#6B8E4E",
-    width: 45,
-    height: 45,
-    borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  formContainer: {
-    backgroundColor: "#FFF",
-    margin: 20,
-    padding: 20,
-    borderRadius: 20,
-  },
-  label: {
-    fontSize: 18,
-    fontFamily: "serif",
-    marginBottom: 10,
-  },
-  input: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 15,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 18,
-    fontFamily: "serif",
-    minHeight: 80,
-    textAlignVertical: "top",
-  },
-  saveButton: {
-    backgroundColor: "#6B8E4E",
-    paddingVertical: 14,
-    borderRadius: 25,
-    alignItems: "center",
-    marginTop: 15,
-  },
-  saveButtonText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
-  emptyState: {
-    alignItems: "center",
-    marginTop: 80,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontFamily: "serif",
-    color: "#999",
-    marginTop: 10,
-  },
-  listContainer: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    padding: 16,
-    marginBottom: 12,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  cardDate: {
-    fontSize: 14,
-    color: "#999",
-    fontFamily: "serif",
-  },
-  cardMessage: {
-    fontSize: 18,
-    fontFamily: "serif",
-    lineHeight: 26,
-    marginBottom: 12,
-  },
-  cardActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 20,
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10, flex: 1 }],
+  addButton: { backgroundColor: COLORS.primary, width: 45, height: 45, borderRadius: 25, alignItems: "center", justifyContent: "center" },
+  formContainer: { backgroundColor: COLORS.white, margin: 20, padding: 20, borderRadius: 20 },
+  label: shared.labelLarge,
+  input: { backgroundColor: COLORS.inputBg, borderRadius: 15, paddingHorizontal: 16, paddingVertical: 12, fontSize: 18, fontFamily: "sans-serif", minHeight: 80, textAlignVertical: "top" },
+  saveButton: { backgroundColor: COLORS.primary, paddingVertical: 14, borderRadius: 25, alignItems: "center", marginTop: 15 },
+  saveButtonText: { color: COLORS.white, fontSize: 18, fontFamily: "sans-serif", fontWeight: "bold" },
+  emptyState: [shared.emptyState, { marginTop: 80 }],
+  emptyText: [shared.emptyText, { marginTop: 10 }],
+  listContainer: { padding: 20, paddingBottom: 30 },
+  card: [shared.card, { marginBottom: 12 }],
+  cardHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
+  cardDate: { fontSize: 14, color: COLORS.textMuted, fontFamily: "sans-serif" },
+  cardMessage: { fontSize: 18, fontFamily: "sans-serif", lineHeight: 26, marginBottom: 12 },
+  cardActions: { flexDirection: "row", justifyContent: "flex-end", gap: 20 },
 });

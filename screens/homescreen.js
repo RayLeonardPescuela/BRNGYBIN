@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Image } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
+import shared, { COLORS } from "../styles";
 
 export default function homescreen({ navigation }) {
   return (
@@ -89,72 +90,16 @@ export default function homescreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40,
-    paddingBottom: 10,
-  },
-  logo: {
-    width: 35,
-    height: 35,
-    marginRight: 10,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  heroBanner: {
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  heroImage: {
-    width: "95%",
-    height: 220,
-  },
-  scrollArea: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 90,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontFamily: "serif",
-    marginBottom: 15,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  gridItem: {
-    width: "47%",
-    backgroundColor: "#6B8E4E",
-    borderRadius: 20,
-    paddingVertical: 25,
-    paddingHorizontal: 15,
-    alignItems: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-  gridLabel: {
-    color: "#FFF",
-    fontSize: 16,
-    fontFamily: "serif",
-    textAlign: "center",
-    marginTop: 10,
-    lineHeight: 20,
-  },
+  container: shared.container,
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingTop: 40, paddingBottom: 10 },
+  logo: { width: 35, height: 35, marginRight: 10 },
+  title: { fontSize: 26, fontWeight: "bold", fontFamily: "sans-serif" },
+  heroBanner: { alignItems: "center", marginBottom: 15 },
+  heroImage: { width: "95%", height: 220 },
+  scrollArea: { flex: 1 },
+  scrollContent: shared.scrollContent,
+  sectionTitle: { fontSize: 20, fontFamily: "sans-serif", marginBottom: 15 },
+  grid: shared.grid,
+  gridItem: [shared.gridItem, { width: "47%", borderRadius: 20, paddingVertical: 25, paddingHorizontal: 15, elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 3 }],
+  gridLabel: [shared.gridLabel, { fontSize: 16, lineHeight: 20, marginTop: 10 }],
 });

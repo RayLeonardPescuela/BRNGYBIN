@@ -17,9 +17,10 @@ import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function ComplaintFeedback({ navigation }) {
-  const { userData } = useUser();
+  const { user, userData } = useUser();
   const [activeTab, setActiveTab] = useState("write");
   const [complaintTitle, setComplaintTitle] = useState("");
   const [complaintMessage, setComplaintMessage] = useState("");
@@ -30,24 +31,25 @@ export default function ComplaintFeedback({ navigation }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (activeTab === "history") {
+    if (activeTab === "history" && user) {
       fetchComplaints();
     }
-  }, [activeTab]);
+  }, [activeTab, user]);
 
   const fetchComplaints = async () => {
     setLoading(true);
     try {
       const snapshot = await db
         .collection("complaints")
-        .where("userId", "==", userData?.uid)
-        .orderBy("createdAt", "desc")
+        .where("userId", "==", user.uid)
         .get();
 
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setComplaints(data);
     } catch (error) {
       console.log("Error fetching complaints:", error);
+      Alert.alert("Error", "Failed to load history");
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ export default function ComplaintFeedback({ navigation }) {
         message: complaintMessage.trim(),
         type: complaintType,
         anonymous: isAnonymous,
-        userId: isAnonymous ? null : userData?.uid,
+        userId: isAnonymous ? null : user?.uid,
         userName: isAnonymous ? "Anonymous" : userData?.name,
         status: "pending",
         createdAt: new Date().toISOString(),
@@ -333,193 +335,38 @@ export default function ComplaintFeedback({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  tabRow: {
-    flexDirection: "row",
-    marginHorizontal: 20,
-    marginTop: 20,
-    backgroundColor: "#FFF",
-    borderRadius: 30,
-    overflow: "hidden",
-  },
-  tab: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    gap: 6,
-  },
-  activeTab: {
-    backgroundColor: "#6B8E4E",
-  },
-  tabText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#333",
-  },
-  activeTabText: {
-    color: "#FFF",
-  },
-  formContainer: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  label: {
-    fontSize: 18,
-    fontFamily: "serif",
-    marginBottom: 8,
-    color: "#333",
-  },
-  typeRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 20,
-  },
-  typeButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    gap: 4,
-  },
-  typeActive: {
-    backgroundColor: "#6B8E4E",
-  },
-  typeText: {
-    fontSize: 13,
-    fontFamily: "serif",
-    color: "#333",
-  },
-  typeActiveText: {
-    color: "#FFF",
-  },
-  input: {
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    fontSize: 18,
-    fontFamily: "serif",
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#DDD",
-  },
-  messageInput: {
-    height: 140,
-  },
-  anonymousRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 20,
-  },
-  anonymousText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#333",
-  },
-  submitButton: {
-    backgroundColor: "#6B8E4E",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 30,
-    gap: 10,
-  },
-  submitText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
-  historyContainer: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  emptyState: {
-    alignItems: "center",
-    marginTop: 60,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontFamily: "serif",
-    color: "#999",
-    marginTop: 10,
-  },
-  complaintCard: {
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 14,
-  },
-  complaintHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  typeBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  typeBadgeText: {
-    fontSize: 14,
-    fontFamily: "serif",
-    textTransform: "capitalize",
-  },
-  statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  complaintTitle: {
-    fontSize: 20,
-    fontFamily: "serif",
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-  complaintMessage: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#555",
-    lineHeight: 22,
-    marginBottom: 10,
-  },
-  complaintDate: {
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#999",
-  },
-  statusRow: {
-    marginTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#EEE",
-    paddingTop: 10,
-  },
-  statusText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  tabRow: shared.tabRow,
+  tab: shared.tab,
+  activeTab: shared.tabActive,
+  tabText: shared.tabText,
+  activeTabText: shared.tabTextActive,
+  formContainer: { padding: 20, paddingBottom: 30 },
+  label: shared.labelLarge,
+  typeRow: shared.typeRow,
+  typeButton: [shared.typeButton, { flex: 1, flexDirection: "row", justifyContent: "center", paddingVertical: 10, paddingHorizontal: 8, gap: 4 }],
+  typeActive: shared.typeButtonActive,
+  typeText: shared.typeButtonText,
+  typeActiveText: shared.typeButtonTextActive,
+  input: [shared.inputWrapperSmall, { borderRadius: 20, paddingHorizontal: 20, paddingVertical: 14, fontSize: 18, marginBottom: 20 }],
+  messageInput: { height: 140 },
+  anonymousRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 20 },
+  anonymousText: { fontSize: 16, fontFamily: "sans-serif", color: COLORS.textPrimary },
+  submitButton: [shared.primaryButton, { flexDirection: "row", justifyContent: "center", paddingVertical: 16, borderRadius: 30, gap: 10 }],
+  submitText: [shared.primaryButtonText, { fontSize: 18 }],
+  historyContainer: { padding: 20, paddingBottom: 30 },
+  emptyState: [shared.emptyState, { marginTop: 60 }],
+  emptyText: [shared.emptyText, { marginTop: 10 }],
+  complaintCard: [shared.cardLarge, { marginBottom: 14 }],
+  complaintHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
+  typeBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
+  typeBadgeText: { fontSize: 14, fontFamily: "sans-serif", textTransform: "capitalize" },
+  statusDot: { width: 12, height: 12, borderRadius: 6 },
+  complaintTitle: { fontSize: 20, fontFamily: "sans-serif", fontWeight: "bold", marginBottom: 6 },
+  complaintMessage: { fontSize: 16, fontFamily: "sans-serif", color: "#555", lineHeight: 22, marginBottom: 10 },
+  complaintDate: { fontSize: 14, fontFamily: "sans-serif", color: COLORS.textMuted },
+  statusRow: { marginTop: 10, borderTopWidth: 1, borderTopColor: "#EEE", paddingTop: 10 },
+  statusText: { fontSize: 16, fontFamily: "sans-serif", fontWeight: "bold" },
 });

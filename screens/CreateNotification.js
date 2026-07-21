@@ -13,6 +13,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function CreateNotification({ navigation }) {
   const { userData } = useUser();
@@ -145,84 +146,18 @@ export default function CreateNotification({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  formContainer: {
-    padding: 20,
-  },
-  label: {
-    fontSize: 18,
-    fontFamily: "serif",
-    marginBottom: 10,
-    color: "#333",
-  },
-  typeRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 20,
-  },
-  typeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    gap: 6,
-  },
-  typeActive: {
-    backgroundColor: "#6B8E4E",
-  },
-  typeText: {
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#333",
-  },
-  typeActiveText: {
-    color: "#FFF",
-  },
-  input: {
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    fontSize: 18,
-    fontFamily: "serif",
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#DDD",
-  },
-  messageInput: {
-    height: 140,
-  },
-  submitButton: {
-    backgroundColor: "#6B8E4E",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 30,
-    gap: 10,
-    marginTop: 10,
-  },
-  submitText: {
-    color: "#FFF",
-    fontSize: 20,
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  formContainer: { padding: 20 },
+  label: shared.labelLarge,
+  typeRow: shared.typeRow,
+  typeButton: [shared.typeButton, { flexDirection: "row", paddingHorizontal: 14, paddingVertical: 10, gap: 6 }],
+  typeActive: shared.typeButtonActive,
+  typeText: shared.typeButtonText,
+  typeActiveText: shared.typeButtonTextActive,
+  input: [shared.inputWrapperSmall, { borderRadius: 20, paddingHorizontal: 20, paddingVertical: 14, fontSize: 18, marginBottom: 20 }],
+  messageInput: { height: 140 },
+  submitButton: [shared.primaryButton, { flexDirection: "row", justifyContent: "center", paddingVertical: 16, borderRadius: 30, gap: 10, marginTop: 10 }],
+  submitText: [shared.primaryButtonText, { fontSize: 20 }],
 });

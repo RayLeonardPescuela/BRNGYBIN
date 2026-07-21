@@ -1,115 +1,125 @@
-import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import firebase from "firebase/compat/app";
+import { auth, db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
-const googleAccounts = [
-  { id: "1", name: "Bless Abegail Antemaro", email: "blessabegaila@gmail.com" },
-  { id: "2", name: "Frankie Bayaton", email: "bayatonfrankie04@gmail.com" },
-  { id: "3", name: "Ray Leonard Pescuela", email: "pescuelarayleonard@gmail.com" },
-  { id: "4", name: "Gea Aranduque", email: "aranduquegea@gmail.com" },
-];
+GoogleSignin.configure({
+  webClientId: "188250769398-9s7gp1v7i1qk7b5c5c5c5c5c5c5c5c5c.apps.googleusercontent.com",
+});
 
 export default function GoogleSignIn({ navigation }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.idToken || userInfo.user?.idToken;
+
+      const credential = firebase.auth.GoogleAuthProvider.credential(idToken);
+      const userCredential = await auth.signInWithCredential(credential);
+      const user = userCredential.user;
+
+      const userDoc = await db.collection("users").doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        await db.collection("users").doc(user.uid).set({
+          name: user.displayName || "Google User",
+          email: user.email || "",
+          sitio: "",
+          points: 0,
+          role: "user",
+          profileImage: user.photoURL || null,
+          createdAt: new Date(),
+        });
+        navigation.navigate("Home");
+      } else {
+        const userData = userDoc.data();
+        if (userData.role === "admin") {
+          navigation.navigate("AdminHome");
+        } else {
+          navigation.navigate("Home");
+        }
+      }
+    } catch (error) {
+      console.log("Google Sign-In error:", error);
+      if (error.code === "SIGN_IN_CANCELLED") {
+        // User cancelled, do nothing
+      } else {
+        Alert.alert("Error", "Google sign-in failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Google Header */}
       <View style={styles.header}>
         <Image source={require("../assets/google_logo.png")} style={styles.googleLogo} />
         <Text style={styles.headerText}>Sign in with Google</Text>
       </View>
       <View style={styles.line} />
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Trash Bin Illustration */}
+      <View style={styles.content}>
         <Image source={require("../assets/garbagecan.png")} style={styles.illustration} />
 
-        <Text style={styles.titleText}>Choose an account</Text>
+        <Text style={styles.titleText}>Sign in with Google</Text>
         <Text style={styles.subText}>
           to continue to <Text style={styles.brandText}>BRGY BIN</Text>
         </Text>
 
-        {/* Account List */}
-        <View style={styles.accountList}>
-          {googleAccounts.map((account) => (
-            <TouchableOpacity 
-              key={account.id} 
-              style={styles.accountItem}
-              onPress={() => navigation.navigate("Home")}
-            >
-              {/* Replaced Image with Icon */}
-              <View style={styles.iconCircle}>
-                <MaterialCommunityIcons name="account-circle" size={50} color="black" />
-              </View>
-              
-              <View style={styles.accountInfo}>
-                <Text style={styles.accountName}>{account.name}</Text>
-                <Text style={styles.accountEmail}>{account.email}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+        <TouchableOpacity
+          style={[styles.signInButton, loading && { opacity: 0.6 }]}
+          onPress={handleGoogleSignIn}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFF" />
+          ) : (
+            <>
+              <MaterialCommunityIcons name="google" size={24} color="#FFF" />
+              <Text style={styles.signInText}>Sign in with Google</Text>
+            </>
+          )}
+        </TouchableOpacity>
 
-          <TouchableOpacity style={styles.accountItem}>
-            <View style={styles.iconCircle}>
-              <MaterialCommunityIcons name="account-outline" size={28} color="black" />
-            </View>
-            <Text style={styles.useAnotherText}>Use another account</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Footer Policy */}
         <Text style={styles.footerText}>
-          Before using this app, you can review BRGY BIN's{" "}
+          By signing in, you agree to BRGY BIN's{" "}
           <Text style={styles.linkText}>privacy policy</Text> and{" "}
           <Text style={styles.linkText}>terms of service</Text>.
         </Text>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF" },
-  header: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    padding: 15, 
-    paddingTop: 45 // Pushed down for status bar
-  },
+  container: { flex: 1, backgroundColor: COLORS.white },
+  header: { flexDirection: "row", alignItems: "center", padding: 15, paddingTop: 45 },
   googleLogo: { width: 22, height: 22, marginRight: 15 },
   headerText: { fontSize: 18, color: "#5F6368" },
-  line: { height: 1, backgroundColor: "#000", width: "100%" },
-  content: { paddingHorizontal: 25, alignItems: "flex-start", paddingTop: 20 },
-  illustration: { width: 70, height: 70, marginBottom: 10 },
-  titleText: { fontSize: 32, fontFamily: "serif", color: "#000", fontWeight: "400" },
-  subText: { fontSize: 16, marginBottom: 25, marginTop: 5 },
-  brandText: { color: "#7CB342", fontWeight: "bold" },
-  accountList: { width: "100%", marginBottom: 30 },
-  accountItem: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    paddingVertical: 12, 
-    borderBottomWidth: 1, 
-    borderBottomColor: "#CCC" 
-  },
-  iconCircle: { 
-    width: 50, 
-    height: 50, 
-    borderRadius: 25, 
-    justifyContent: "center", 
-    alignItems: "center",
-    borderWidth: 0.5,
-    borderColor: '#ddd'
-  },
-  accountInfo: { marginLeft: 15 },
-  accountName: { fontSize: 16, fontWeight: "500", color: '#333' },
-  accountEmail: { fontSize: 14, color: "#5F6368" },
-  useAnotherText: { fontSize: 16, marginLeft: 15, fontWeight: '500' },
-  footerText: { 
-    fontSize: 13, 
-    color: "#000", 
-    lineHeight: 18, 
-    marginTop: 10,
-    fontFamily: 'serif' 
-  },
-  linkText: { color: "#4A90E2" },
+  line: { height: 1, backgroundColor: COLORS.black, width: "100%" },
+  content: { flex: 1, alignItems: "center", paddingHorizontal: 30, paddingTop: 40 },
+  illustration: { width: 100, height: 100, marginBottom: 20 },
+  titleText: { fontSize: 28, fontFamily: "sans-serif", color: COLORS.black, fontWeight: "400", marginBottom: 5 },
+  subText: { fontSize: 16, marginBottom: 40, color: COLORS.textPrimary },
+  brandText: { color: COLORS.secondary, fontWeight: "bold" },
+  signInButton: { flexDirection: "row", backgroundColor: COLORS.googleBlue, width: "100%", paddingVertical: 16, borderRadius: 30, justifyContent: "center", alignItems: "center", gap: 10, elevation: 3, marginBottom: 30 },
+  signInText: { color: COLORS.white, fontSize: 18, fontFamily: "sans-serif", fontWeight: "bold" },
+  footerText: { fontSize: 13, color: COLORS.black, lineHeight: 18, fontFamily: "sans-serif", textAlign: "center" },
+  linkText: { color: COLORS.accent },
 });

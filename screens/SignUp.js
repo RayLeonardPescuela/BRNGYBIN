@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { auth, db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
 export default function SignUp() {
   const navigation = useNavigation();
@@ -271,102 +272,22 @@ export default function SignUp() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  headerContainer: {
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backButton: {
-    marginRight: 10,
-  },
-  headerTitle: {
-    fontSize: 32,
-    fontFamily: "serif",
-    fontWeight: "bold",
-    color: "#3E2723",
-  },
-  scrollContent: {
-    alignItems: "center",
-    paddingHorizontal: 30,
-    paddingBottom: 40,
-  },
-  illustrationContainer: {
-    width: "100%",
-    alignItems: "center",
-    marginVertical: 15,
-  },
-  illustration: {
-    width: "70%",
-    height: 150,
-  },
-  inputContainer: {
-    width: "100%",
-    gap: 15,
-    marginBottom: 25,
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    height: 55,
-    elevation: 2,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#3E2723",
-  },
-  errorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFEBEE",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginBottom: 15,
-    gap: 8,
-  },
-  errorText: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#C62828",
-  },
-  signUpButton: {
-    backgroundColor: "#6B8E4E",
-    width: "100%",
-    paddingVertical: 15,
-    borderRadius: 35,
-    alignItems: "center",
-    elevation: 4,
-  },
-  buttonText: {
-    fontSize: 22,
-    color: "#FFF",
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
-  loginContainer: {
-    marginTop: 20,
-  },
-  loginText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#3E2723",
-  },
-  loginBold: {
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-  },
+  container: shared.container,
+  headerContainer: [shared.headerWithTitle, { paddingTop: 40 }],
+  backButton: shared.backButton,
+  headerTitle: shared.headerTitleLarge,
+  scrollContent: { alignItems: "center", paddingHorizontal: 30, paddingBottom: 40 },
+  illustrationContainer: { width: "100%", alignItems: "center", marginVertical: 15 },
+  illustration: { width: "70%", height: 150 },
+  inputContainer: { width: "100%", gap: 15, marginBottom: 25 },
+  inputWrapper: [shared.inputWrapper, { height: 55 }],
+  inputIcon: shared.inputIcon,
+  input: shared.inputField,
+  errorContainer: shared.errorContainer,
+  errorText: shared.errorText,
+  signUpButton: [shared.primaryButton, { width: "100%", borderRadius: 35 }],
+  buttonText: shared.primaryButtonText,
+  loginContainer: { marginTop: 20 },
+  loginText: { fontSize: 16, fontFamily: "sans-serif", color: COLORS.textDark },
+  loginBold: { fontWeight: "bold", textDecorationLine: "underline" },
 });

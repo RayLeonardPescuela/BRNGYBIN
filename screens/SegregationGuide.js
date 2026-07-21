@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
+import shared, { COLORS } from "../styles";
 
 export default function SegregationGuide({ navigation }) {
   const [selectedType, setSelectedType] = useState("Biodegradable");
@@ -77,70 +78,16 @@ export default function SegregationGuide({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  divider: {
-    height: 2,
-    backgroundColor: "#4A90E2",
-    marginHorizontal: 0,
-    marginBottom: 20,
-  },
-  scrollWrapper: {
-    height: 160,
-  },
-  scrollContent: {
-    paddingHorizontal: 15,
-    alignItems: "center",
-  },
-  itemWrapper: {
-    alignItems: "center",
-    marginHorizontal: 10,
-  },
-  circleButton: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#FFF",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  activeCircle: {
-    backgroundColor: "#7CB342",
-    borderWidth: 2,
-    borderColor: "#FFF",
-  },
-  circleLabel: {
-    marginTop: 8,
-    fontSize: 14,
-    fontFamily: "serif",
-    textAlign: "center",
-  },
-  infoCard: {
-    backgroundColor: "#FFF",
-    margin: 20,
-    padding: 25,
-    borderRadius: 15,
-    minHeight: 250,
-    elevation: 2,
-  },
-  infoText: {
-    fontSize: 18,
-    fontFamily: "serif",
-    lineHeight: 28,
-    textAlign: "justify",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  divider: shared.dividerBlue,
+  scrollWrapper: { height: 160 },
+  scrollContent: { paddingHorizontal: 15, alignItems: "center" },
+  itemWrapper: { alignItems: "center", marginHorizontal: 10 },
+  circleButton: { width: 100, height: 100, borderRadius: 50, backgroundColor: COLORS.white, justifyContent: "center", alignItems: "center" },
+  activeCircle: { backgroundColor: COLORS.secondary, borderWidth: 2, borderColor: COLORS.white },
+  circleLabel: { marginTop: 8, fontSize: 14, fontFamily: "sans-serif", textAlign: "center" },
+  infoCard: [shared.card, { margin: 20, padding: 25, minHeight: 250 }],
+  infoText: { fontSize: 18, fontFamily: "sans-serif", lineHeight: 28, textAlign: "justify" },
 });

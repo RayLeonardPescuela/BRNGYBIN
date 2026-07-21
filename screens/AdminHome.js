@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -9,7 +9,9 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { useUser } from "../config/UserContext";
+import { useFocusEffect } from "@react-navigation/native";
 import { db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
 export default function AdminHome({ navigation }) {
   const { userData } = useUser();
@@ -17,18 +19,22 @@ export default function AdminHome({ navigation }) {
     totalUsers: 0,
     totalComplaints: 0,
     pendingComplaints: 0,
+    pendingRequests: 0,
   });
   const [recentComplaints, setRecentComplaints] = useState([]);
 
-  useEffect(() => {
-    fetchStats();
-    fetchRecentComplaints();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchStats();
+      fetchRecentComplaints();
+    }, [])
+  );
 
   const fetchStats = async () => {
     try {
       const usersSnapshot = await db.collection("users").get();
       const complaintsSnapshot = await db.collection("complaints").get();
+      const requestsSnapshot = await db.collection("pickupRequests").where("status", "==", "pending").get();
 
       let pendingCount = 0;
       complaintsSnapshot.docs.forEach((doc) => {
@@ -39,6 +45,7 @@ export default function AdminHome({ navigation }) {
         totalUsers: usersSnapshot.size,
         totalComplaints: complaintsSnapshot.size,
         pendingComplaints: pendingCount,
+        pendingRequests: requestsSnapshot.size,
       });
     } catch (error) {
       console.log("Error fetching stats:", error);
@@ -98,13 +105,13 @@ export default function AdminHome({ navigation }) {
           </View>
           <View style={[styles.statCard, { backgroundColor: "#E57373" }]}>
             <MaterialCommunityIcons name="message-alert" size={30} color="#FFF" />
-            <Text style={styles.statValue}>{stats.totalComplaints}</Text>
-            <Text style={styles.statLabel}>Complaints</Text>
+            <Text style={styles.statValue}>{stats.pendingComplaints}</Text>
+            <Text style={styles.statLabel}>Pending{"\n"}Complaints</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: "#FFB74D" }]}>
-            <MaterialCommunityIcons name="clock-alert" size={30} color="#FFF" />
-            <Text style={styles.statValue}>{stats.pendingComplaints}</Text>
-            <Text style={styles.statLabel}>Pending</Text>
+            <MaterialCommunityIcons name="truck-delivery" size={30} color="#FFF" />
+            <Text style={styles.statValue}>{stats.pendingRequests}</Text>
+            <Text style={styles.statLabel}>Pickup{"\n"}Requests</Text>
           </View>
         </View>
 
@@ -132,7 +139,7 @@ export default function AdminHome({ navigation }) {
             onPress={() => navigation.navigate("ViewComplaints")}
           >
             <MaterialCommunityIcons name="message-text-clock" size={36} color="#FFF" />
-            <Text style={styles.gridLabel}>View{"\n"}Complaints</Text>
+            <Text style={styles.gridLabel}>Complaints{"\n"}& Requests</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -164,7 +171,15 @@ export default function AdminHome({ navigation }) {
             onPress={() => navigation.navigate("Home")}
           >
             <MaterialCommunityIcons name="eye" size={36} color="#FFF" />
-            <Text style={styles.gridLabel}>View as{"\n"}User</Text>
+            <Text style={styles.gridLabel}>View{"\n"}User</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.gridItem}
+            onPress={() => navigation.navigate("DeveloperKiosk")}
+          >
+            <MaterialCommunityIcons name="account-group" size={36} color="#FFF" />
+            <Text style={styles.gridLabel}>Developers</Text>
           </TouchableOpacity>
         </View>
 
@@ -200,127 +215,23 @@ export default function AdminHome({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 10,
-  },
-  greeting: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#555",
-  },
-  userName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  roleBadge: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#FFF",
-    backgroundColor: "#E57373",
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginTop: 4,
-  },
-  scrollContent: {
-    paddingBottom: 40,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "serif",
-    marginBottom: 12,
-    marginTop: 10,
-  },
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-    gap: 10,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 15,
-    padding: 15,
-    alignItems: "center",
-    elevation: 2,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "bold",
-    fontFamily: "serif",
-    color: "#FFF",
-    marginTop: 5,
-  },
-  statLabel: {
-    fontSize: 11,
-    color: "#FFF",
-    fontFamily: "serif",
-    marginTop: 2,
-    textAlign: "center",
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 12,
-    marginBottom: 20,
-  },
-  gridItem: {
-    width: "30%",
-    backgroundColor: "#6B8E4E",
-    borderRadius: 16,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    elevation: 2,
-  },
-  gridLabel: {
-    color: "#FFF",
-    fontSize: 13,
-    fontFamily: "serif",
-    textAlign: "center",
-    marginTop: 8,
-    lineHeight: 17,
-  },
-  activityCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 10,
-    gap: 12,
-  },
-  activityInfo: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    fontFamily: "serif",
-  },
-  activitySub: {
-    fontSize: 13,
-    color: "#666",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
+  container: shared.container,
+  topBar: shared.topBar,
+  greeting: shared.greeting,
+  userName: shared.userName,
+  roleBadge: shared.roleBadge,
+  scrollContent: shared.scrollContentSmall,
+  sectionTitle: [shared.sectionTitle, { marginTop: 10 }],
+  statsRow: shared.statsRow,
+  statCard: shared.statCard,
+  statValue: [shared.statValue, { fontSize: 24, color: COLORS.white }],
+  statLabel: [shared.statLabel, { fontSize: 11, color: COLORS.white, textAlign: "center" }],
+  grid: shared.grid,
+  gridItem: shared.gridItem,
+  gridLabel: [shared.gridLabel, { fontSize: 13, lineHeight: 17 }],
+  activityCard: shared.activityCard,
+  activityInfo: shared.activityInfo,
+  activityTitle: shared.activityTitle,
+  activitySub: shared.activitySub,
+  statusDot: { width: 10, height: 10, borderRadius: 5 },
 });

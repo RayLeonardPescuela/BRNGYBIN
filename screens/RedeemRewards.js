@@ -12,6 +12,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function RedeemRewards({ navigation }) {
   const { userData, refreshUserData } = useUser();
@@ -171,128 +172,26 @@ export default function RedeemRewards({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#000",
-    marginHorizontal: 20,
-    marginBottom: 15,
-  },
-  pointsBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#3E5132",
-    marginHorizontal: 20,
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 20,
-    gap: 10,
-  },
-  pointsText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontFamily: "serif",
-    color: "#666",
-  },
-  emptySubtext: {
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#999",
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  itemCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 12,
-    elevation: 2,
-  },
-  itemIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#6B8E4E",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  itemDesc: {
-    fontSize: 13,
-    color: "#666",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
-  itemMeta: {
-    flexDirection: "row",
-    gap: 15,
-    marginTop: 5,
-  },
-  itemPoints: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#6B8E4E",
-    fontFamily: "serif",
-  },
-  itemStock: {
-    fontSize: 13,
-    color: "#999",
-    fontFamily: "serif",
-  },
-  outOfStock: {
-    color: "#E57373",
-  },
-  redeemBtn: {
-    backgroundColor: "#6B8E4E",
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  redeemBtnDisabled: {
-    backgroundColor: "#CCC",
-  },
-  redeemBtnText: {
-    color: "#FFF",
-    fontSize: 14,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  divider: shared.divider,
+  pointsBanner: shared.pointsBanner,
+  pointsText: shared.pointsBannerText,
+  center: shared.center,
+  emptyText: shared.emptyText,
+  emptySubtext: shared.emptySubtext,
+  listContent: { paddingHorizontal: 20, paddingBottom: 40 },
+  itemCard: shared.itemCard,
+  itemIcon: shared.itemIcon,
+  itemInfo: shared.itemInfo,
+  itemName: shared.itemName,
+  itemDesc: shared.itemDesc,
+  itemMeta: shared.itemMeta,
+  itemPoints: shared.itemPoints,
+  itemStock: shared.itemStock,
+  outOfStock: { color: COLORS.error },
+  redeemBtn: { backgroundColor: COLORS.primary, paddingHorizontal: 15, paddingVertical: 8, borderRadius: 20 },
+  redeemBtnDisabled: { backgroundColor: "#CCC" },
+  redeemBtnText: { color: COLORS.white, fontSize: 14, fontWeight: "bold", fontFamily: "sans-serif" },
 });

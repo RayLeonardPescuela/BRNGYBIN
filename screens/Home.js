@@ -13,6 +13,7 @@ import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { useUser } from "../config/UserContext";
 import { db } from "../config/firebase";
+import shared, { COLORS } from "../styles";
 
 const defaultAnnouncements = [
   "Segregation is mandatory in our barangay!",
@@ -95,14 +96,6 @@ export default function Home({ navigation }) {
     }
   };
 
-  // Redirect admin to AdminHome once userData is loaded
-  useEffect(() => {
-    if (!loading && userData?.role === "admin") {
-      navigation.replace("AdminHome");
-    }
-  }, [userData, loading]);
-
-  // Show loading while checking role
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -111,11 +104,6 @@ export default function Home({ navigation }) {
         </View>
       </SafeAreaView>
     );
-  }
-
-  // If admin, don't render user home (will redirect)
-  if (userData?.role === "admin") {
-    return null;
   }
 
   return (
@@ -215,6 +203,14 @@ export default function Home({ navigation }) {
             <MaterialCommunityIcons name="bell-outline" size={36} color="#FFF" />
             <Text style={styles.gridLabel}>Notifications</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.gridItem}
+            onPress={() => navigation.navigate("DeveloperKiosk")}
+          >
+            <MaterialCommunityIcons name="account-group" size={36} color="#FFF" />
+            <Text style={styles.gridLabel}>Developers</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Recent Activity */}
@@ -248,145 +244,24 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 10,
-  },
-  greeting: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#555",
-  },
-  userName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    fontFamily: "serif",
-  },
-  adminBadge: {
-    fontSize: 11,
-    fontWeight: "bold",
-    color: "#FFF",
-    backgroundColor: "#E57373",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    overflow: "hidden",
-    marginTop: 4,
-  },
-  scrollContent: {
-    paddingBottom: 90,
-    paddingHorizontal: 20,
-  },
-
-  // Announcement
-  announcementBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#3E5C3E",
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 20,
-    gap: 10,
-  },
-  announcementText: {
-    flex: 1,
-    color: "#FFF",
-    fontSize: 15,
-    fontFamily: "serif",
-  },
-
-  // Stats
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-    gap: 10,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    padding: 15,
-    alignItems: "center",
-    elevation: 2,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    fontFamily: "serif",
-    marginTop: 5,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: "#666",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
-
-  // Section
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "serif",
-    marginBottom: 12,
-  },
-
-  // Grid
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 12,
-    marginBottom: 20,
-  },
-  gridItem: {
-    width: "30%",
-    backgroundColor: "#6B8E4E",
-    borderRadius: 16,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    elevation: 2,
-  },
-  gridLabel: {
-    color: "#FFF",
-    fontSize: 11,
-    fontFamily: "serif",
-    textAlign: "center",
-    marginTop: 8,
-    lineHeight: 14,
-  },
-
-  // Activity
-  activityCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 10,
-    gap: 12,
-  },
-  activityInfo: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    fontFamily: "serif",
-  },
-  activitySub: {
-    fontSize: 13,
-    color: "#666",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
+  container: shared.container,
+  topBar: shared.topBar,
+  greeting: shared.greeting,
+  userName: shared.userName,
+  adminBadge: shared.adminBadge,
+  scrollContent: shared.scrollContent,
+  announcementBanner: shared.announcementBanner,
+  announcementText: shared.announcementText,
+  statsRow: shared.statsRow,
+  statCard: shared.statCard,
+  statValue: shared.statValue,
+  statLabel: shared.statLabel,
+  sectionTitle: shared.sectionTitle,
+  grid: shared.grid,
+  gridItem: shared.gridItem,
+  gridLabel: shared.gridLabel,
+  activityCard: shared.activityCard,
+  activityInfo: shared.activityInfo,
+  activityTitle: shared.activityTitle,
+  activitySub: shared.activitySub,
 });

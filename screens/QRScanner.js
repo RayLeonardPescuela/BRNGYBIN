@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -7,23 +7,37 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function QRScanner({ navigation }) {
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const { user, refreshUserData } = useUser();
+  const { user, userData, refreshUserData } = useUser();
 
-  useEffect(() => {
-    if (permission && !permission.granted) {
-      requestPermission();
+  const handleGrantPermission = async () => {
+    try {
+      const result = await requestPermission();
+      if (!result.granted && !result.canAskAgain) {
+        Alert.alert(
+          "Permission Denied",
+          "Camera permission was permanently denied. Please enable it in your device settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() },
+          ]
+        );
+      }
+    } catch (error) {
+      console.log("Permission error:", error);
     }
-  }, [permission]);
+  };
 
   const handleBarCodeScanned = async ({ type, data }) => {
     if (scanned || loading) return;
@@ -35,7 +49,6 @@ export default function QRScanner({ navigation }) {
       const qrPayload = JSON.parse(data);
       const { id, points, expiresAt } = qrPayload;
 
-      // Check if expired
       if (new Date(expiresAt) < new Date()) {
         Alert.alert("Expired", "This QR code has expired.", [
           { text: "OK", onPress: () => setScanned(false) },
@@ -44,7 +57,6 @@ export default function QRScanner({ navigation }) {
         return;
       }
 
-      // Check if already used
       const rewardDoc = await db.collection("rewards").doc(id).get();
       if (!rewardDoc.exists) {
         Alert.alert("Invalid", "This QR code is not valid.", [
@@ -62,17 +74,22 @@ export default function QRScanner({ navigation }) {
         return;
       }
 
-      // Mark as used
       await db.collection("rewards").doc(id).update({ used: true });
 
-      // Add points to user
+      await db.collection("pointHistory").add({
+        userId: user.uid,
+        userName: userData?.name || "User",
+        points: points,
+        description: rewardDoc.data().description || "QR Code Reward",
+        createdAt: new Date().toISOString(),
+      });
+
       const userDoc = await db.collection("users").doc(user.uid).get();
       const currentPoints = userDoc.data().points || 0;
       await db.collection("users").doc(user.uid).update({
         points: currentPoints + points,
       });
 
-      // Refresh user data
       await refreshUserData();
 
       Alert.alert(
@@ -112,8 +129,16 @@ export default function QRScanner({ navigation }) {
         <View style={styles.center}>
           <MaterialCommunityIcons name="camera-off" size={60} color="#999" />
           <Text style={styles.permText}>Camera permission is required</Text>
-          <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
-            <Text style={styles.permBtnText}>Grant Permission</Text>
+          <Text style={styles.permSubtext}>
+            {permission.canAskAgain
+              ? "Tap the button below to grant access"
+              : "Please enable camera access in your device settings"}
+          </Text>
+          <TouchableOpacity style={styles.permBtn} onPress={handleGrantPermission}>
+            <MaterialCommunityIcons name="camera" size={20} color="#FFF" />
+            <Text style={styles.permBtnText}>
+              {permission.canAskAgain ? "Grant Permission" : "Open Settings"}
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -162,76 +187,18 @@ export default function QRScanner({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 15,
-  },
-  permText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#666",
-  },
-  permBtn: {
-    backgroundColor: "#6B8E4E",
-    paddingHorizontal: 25,
-    paddingVertical: 12,
-    borderRadius: 25,
-  },
-  permBtnText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontFamily: "serif",
-    fontWeight: "bold",
-  },
-  cameraContainer: {
-    flex: 1,
-    marginHorizontal: 20,
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  camera: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scanFrame: {
-    width: 250,
-    height: 250,
-    borderWidth: 3,
-    borderColor: "#6B8E4E",
-    borderRadius: 20,
-    backgroundColor: "transparent",
-  },
-  instructions: {
-    padding: 25,
-    alignItems: "center",
-    gap: 10,
-  },
-  instructionText: {
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#333",
-    textAlign: "center",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  center: shared.center,
+  permText: { fontSize: 18, fontFamily: "sans-serif", color: COLORS.textPrimary, fontWeight: "bold" },
+  permSubtext: { fontSize: 14, fontFamily: "sans-serif", color: COLORS.textSecondary, textAlign: "center", paddingHorizontal: 40 },
+  permBtn: { flexDirection: "row", backgroundColor: COLORS.primary, paddingHorizontal: 25, paddingVertical: 12, borderRadius: 25, gap: 8, alignItems: "center" },
+  permBtnText: { color: COLORS.white, fontSize: 16, fontFamily: "sans-serif", fontWeight: "bold" },
+  cameraContainer: { flex: 1, marginHorizontal: 20, borderRadius: 20, overflow: "hidden" },
+  camera: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center" },
+  scanFrame: { width: 250, height: 250, borderWidth: 3, borderColor: COLORS.primary, borderRadius: 20, backgroundColor: "transparent" },
+  instructions: { padding: 25, alignItems: "center", gap: 10 },
+  instructionText: { fontSize: 16, fontFamily: "sans-serif", color: COLORS.textPrimary, textAlign: "center" },
 });

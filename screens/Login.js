@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Image,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +22,35 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Enter your email first, then tap Forgot Password");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      await auth.sendPasswordResetEmail(email);
+      Alert.alert(
+        "Email Sent",
+        "A password reset link has been sent to your email. Check your inbox and spam/junk folder."
+      );
+    } catch (error) {
+      console.log("Password reset error:", error.code, error.message);
+      if (error.code === "auth/user-not-found") {
+        setError("No account found with this email");
+      } else if (error.code === "auth/invalid-email") {
+        setError("Invalid email address format");
+      } else {
+        setError("Failed to send reset email. Check your email and try again");
+      }
+    }
+  };
 
   const handleLogin = async () => {
     setError("");
@@ -168,7 +198,7 @@ export default function Login() {
         </TouchableOpacity>
 
         {/* Forgot Password Link */}
-        <TouchableOpacity style={styles.forgotContainer}>
+        <TouchableOpacity style={styles.forgotContainer} onPress={handleForgotPassword}>
           <Text style={styles.forgotText}>Forgot Password?</Text>
         </TouchableOpacity>
 
@@ -202,7 +232,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 32,
-    fontFamily: "serif",
+    fontFamily: "sans-serif",
     fontWeight: "bold",
     color: "#3E2723",
   },
@@ -240,7 +270,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 18,
-    fontFamily: "serif",
+    fontFamily: "sans-serif",
     color: "#3E2723",
   },
   errorContainer: {
@@ -256,7 +286,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 14,
-    fontFamily: "serif",
+    fontFamily: "sans-serif",
     color: "#C62828",
   },
   signInButton: {
@@ -270,7 +300,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 22,
     color: "#FFF",
-    fontFamily: "serif",
+    fontFamily: "sans-serif",
     fontWeight: "bold",
   },
   forgotContainer: {
@@ -278,7 +308,7 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     fontSize: 16,
-    fontFamily: "serif",
+    fontFamily: "sans-serif",
     color: "#3E2723",
     textDecorationLine: "underline",
   },
@@ -287,7 +317,7 @@ const styles = StyleSheet.create({
   },
   signupText: {
     fontSize: 16,
-    fontFamily: "serif",
+    fontFamily: "sans-serif",
     color: "#3E2723",
   },
   signupBold: {

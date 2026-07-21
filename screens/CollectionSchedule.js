@@ -7,10 +7,13 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { db } from "../config/firebase";
+import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 const ScheduleItem = ({ icon, title, area, time, status, statusColor }) => (
   <View style={styles.card}>
@@ -59,9 +62,13 @@ const getStatusColor = (status) => {
 export default function CollectionSchedule({ navigation }) {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasPendingRequest, setHasPendingRequest] = useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
+  const { user, userData } = useUser();
 
   useEffect(() => {
     fetchSchedules();
+    checkPendingRequest();
   }, []);
 
   const fetchSchedules = async () => {
@@ -80,6 +87,57 @@ export default function CollectionSchedule({ navigation }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const checkPendingRequest = async () => {
+    if (!user) return;
+    try {
+      const snapshot = await db
+        .collection("pickupRequests")
+        .where("userId", "==", user.uid)
+        .where("status", "==", "pending")
+        .get();
+      setHasPendingRequest(!snapshot.empty);
+    } catch (error) {
+      console.log("Error checking request:", error);
+    }
+  };
+
+  const handlePickupRequest = async () => {
+    if (hasPendingRequest) {
+      Alert.alert("Already Requested", "You already have a pending pickup request. Please wait for it to be completed.");
+      return;
+    }
+
+    Alert.alert(
+      "Pickup Request",
+      "Send a pickup request to the admin?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Send",
+          onPress: async () => {
+            setRequestLoading(true);
+            try {
+              await db.collection("pickupRequests").add({
+                userId: user.uid,
+                userName: userData?.name || "Unknown",
+                userSitio: userData?.sitio || "No sitio",
+                status: "pending",
+                createdAt: new Date().toISOString(),
+              });
+              setHasPendingRequest(true);
+              Alert.alert("Request Sent", "Your pickup request has been sent to the admin.");
+            } catch (error) {
+              console.log("Error sending request:", error);
+              Alert.alert("Error", "Failed to send request. Try again.");
+            } finally {
+              setRequestLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -123,116 +181,47 @@ export default function CollectionSchedule({ navigation }) {
       )}
 
       {/* Footer Button */}
-      <TouchableOpacity style={styles.pickupButton}>
-        <MaterialCommunityIcons name="truck-delivery" size={24} color="#FFF" />
-        <Text style={styles.pickupButtonText}>Pickup Request</Text>
+      <TouchableOpacity
+        style={[styles.pickupButton, hasPendingRequest && styles.pickupButtonPending]}
+        onPress={handlePickupRequest}
+        disabled={requestLoading}
+      >
+        {requestLoading ? (
+          <ActivityIndicator color="#FFF" />
+        ) : hasPendingRequest ? (
+          <>
+            <MaterialCommunityIcons name="check-circle" size={24} color="#FFF" />
+            <Text style={styles.pickupButtonText}>Request Sent</Text>
+          </>
+        ) : (
+          <>
+            <MaterialCommunityIcons name="truck-delivery" size={24} color="#FFF" />
+            <Text style={styles.pickupButtonText}>Pickup Request</Text>
+          </>
+        )}
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#C5D8A4",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontFamily: "serif",
-    marginLeft: 10,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#000",
-    marginBottom: 20,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontFamily: "serif",
-    color: "#666",
-  },
-  emptySubtext: {
-    fontSize: 14,
-    fontFamily: "serif",
-    color: "#999",
-  },
-  listContent: {
-    paddingHorizontal: 15,
-    paddingBottom: 20,
-  },
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    padding: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
-    elevation: 2,
-  },
-  cardLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  textContainer: {
-    marginLeft: 15,
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontFamily: "serif",
-    fontWeight: "500",
-  },
-  cardArea: {
-    fontSize: 14,
-    color: "#666",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
-  cardTime: {
-    fontSize: 14,
-    color: "#333",
-    fontFamily: "serif",
-    marginTop: 2,
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  statusText: {
-    color: "#FFF",
-    fontSize: 12,
-    fontWeight: "bold",
-    textTransform: "capitalize",
-  },
-  pickupButton: {
-    flexDirection: "row",
-    backgroundColor: "#3E5C3E",
-    margin: 20,
-    padding: 15,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pickupButtonText: {
-    color: "#FFF",
-    fontSize: 20,
-    marginLeft: 10,
-    fontFamily: "serif",
-  },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  divider: shared.divider,
+  center: shared.center,
+  emptyText: shared.emptyText,
+  emptySubtext: shared.emptySubtext,
+  listContent: { paddingHorizontal: 15, paddingBottom: 20 },
+  card: [shared.card, { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }],
+  cardLeft: { flexDirection: "row", alignItems: "center", flex: 1 },
+  textContainer: { marginLeft: 15, flex: 1 },
+  cardTitle: { fontSize: 16, fontFamily: "sans-serif", fontWeight: "500" },
+  cardArea: { fontSize: 14, color: COLORS.textSecondary, fontFamily: "sans-serif", marginTop: 2 },
+  cardTime: { fontSize: 14, color: COLORS.textPrimary, fontFamily: "sans-serif", marginTop: 2 },
+  statusBadge: [shared.statusBadge, { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 }],
+  statusText: [shared.statusBadgeText, { textTransform: "capitalize" }],
+  pickupButton: { flexDirection: "row", backgroundColor: COLORS.primaryDark, margin: 20, padding: 15, borderRadius: 30, justifyContent: "center", alignItems: "center", gap: 10 },
+  pickupButtonPending: { backgroundColor: COLORS.secondary },
+  pickupButtonText: { color: COLORS.white, fontSize: 20, fontFamily: "sans-serif" },
 });

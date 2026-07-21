@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function Notification({ navigation }) {
   const { userData } = useUser();
@@ -182,51 +183,24 @@ export default function Notification({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#C5D8A4" },
-  header: { flexDirection: "row", alignItems: "center", padding: 20, paddingTop: 50 },
-  headerTitle: { fontSize: 32, fontFamily: "serif", flex: 1, marginLeft: 10 },
+  container: shared.container,
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10, flex: 1 }],
   bellContainer: { position: "relative" },
-  badge: {
-    position: "absolute",
-    top: -5,
-    right: -5,
-    backgroundColor: "#EF5350",
-    borderRadius: 10,
-    width: 20,
-    height: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: { color: "#FFF", fontSize: 12, fontWeight: "bold" },
-  divider: { height: 1, backgroundColor: "#444" },
+  badge: { position: "absolute", top: -5, right: -5, backgroundColor: "#EF5350", borderRadius: 10, width: 20, height: 20, alignItems: "center", justifyContent: "center" },
+  badgeText: { color: COLORS.white, fontSize: 12, fontWeight: "bold" },
+  divider: { height: 1, backgroundColor: COLORS.grayLine },
   subHeader: { flexDirection: "row", justifyContent: "space-between", padding: 15 },
-  subHeaderText: { fontSize: 18, color: "#556B2F", fontFamily: "serif" },
+  subHeaderText: { fontSize: 18, color: COLORS.brownDark, fontFamily: "sans-serif" },
   scrollArea: { paddingHorizontal: 15, paddingBottom: 100 },
   emptyContainer: { alignItems: "center", marginTop: 80 },
-  emptyText: { fontSize: 18, fontFamily: "serif", color: "#999", marginTop: 10 },
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    padding: 15,
-    flexDirection: "row",
-    marginBottom: 15,
-    elevation: 3,
-  },
-  unreadCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: "#6B8E4E",
-  },
+  emptyText: { fontSize: 18, fontFamily: "sans-serif", color: COLORS.textMuted, marginTop: 10 },
+  card: { backgroundColor: COLORS.white, borderRadius: 10, padding: 15, flexDirection: "row", marginBottom: 15, elevation: 3 },
+  unreadCard: { borderLeftWidth: 4, borderLeftColor: COLORS.primary },
   cardIcon: { width: 50, height: 50, marginRight: 15, resizeMode: "contain" },
   cardTextContainer: { flex: 1 },
-  cardTitle: { fontSize: 18, fontWeight: "500", fontFamily: "serif" },
-  highlightText: { color: "#8B4513", fontSize: 14, marginTop: 4 },
-  timeStamp: { textAlign: "right", color: "#888", fontSize: 12, marginTop: 5 },
-  unreadDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#6B8E4E",
-    alignSelf: "flex-start",
-    marginTop: 5,
-  },
+  cardTitle: { fontSize: 18, fontWeight: "500", fontFamily: "sans-serif" },
+  highlightText: { color: COLORS.brown, fontSize: 14, marginTop: 4 },
+  timeStamp: { textAlign: "right", color: COLORS.brownLight, fontSize: 12, marginTop: 5 },
+  unreadDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.primary, alignSelf: "flex-start", marginTop: 5 },
 });

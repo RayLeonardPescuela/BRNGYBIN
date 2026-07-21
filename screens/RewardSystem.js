@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Ima
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { useUser } from "../config/UserContext";
+import shared, { COLORS } from "../styles";
 
 export default function RewardSystem({ navigation }) {
   const { userData } = useUser();
@@ -65,7 +66,10 @@ export default function RewardSystem({ navigation }) {
             <Ionicons name="chevron-forward" size={24} color="black" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.rewardOption}>
+          <TouchableOpacity 
+            style={styles.rewardOption}
+            onPress={() => navigation.navigate("PointHistory")}
+          >
             <MaterialCommunityIcons name="history" size={40} color="black" />
             <View style={styles.optionTextWrapper}>
               <Text style={styles.optionTitle}>Point History</Text>
@@ -82,45 +86,22 @@ export default function RewardSystem({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#C5D8A4" },
-  headerContainer: { paddingTop: 40, backgroundColor: "#C5D8A4", zIndex: 10 },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 20 },
-  headerTitle: { fontSize: 26, fontFamily: "serif", marginLeft: 10 },
-  divider: { height: 1, backgroundColor: "#000", marginHorizontal: 20, marginVertical: 10 },
-  scrollContent: { paddingBottom: 90 },
-  
-  pointsCard: {
-    backgroundColor: "#3E5132",
-    margin: 20,
-    borderRadius: 25,
-    padding: 30,
-    alignItems: "center",
-    elevation: 5,
-  },
-  pointsLabel: { color: "#FFF", fontSize: 18, fontFamily: "serif" },
+  container: shared.container,
+  headerContainer: { paddingTop: 40, backgroundColor: COLORS.background, zIndex: 10 },
+  header: shared.header,
+  headerTitle: [shared.headerTitle, { marginLeft: 10 }],
+  divider: shared.divider,
+  scrollContent: shared.scrollContent,
+  pointsCard: { backgroundColor: COLORS.primaryDarker, margin: 20, borderRadius: 25, padding: 30, alignItems: "center", elevation: 5 },
+  pointsLabel: { color: COLORS.white, fontSize: 18, fontFamily: "sans-serif" },
   pointsRow: { flexDirection: "row", alignItems: "center", marginVertical: 10 },
-  pointsValue: { color: "#FFF", fontSize: 48, fontWeight: "bold", marginLeft: 10 },
-  pointsSubtext: { color: "#C5D8A4", fontSize: 14 },
-
-  descriptionBox: {
-    backgroundColor: "#FFF",
-    marginHorizontal: 20,
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 20,
-  },
-  descriptionText: { fontSize: 16, fontFamily: "serif", lineHeight: 22, textAlign: "center" },
-
+  pointsValue: { color: COLORS.white, fontSize: 48, fontWeight: "bold", marginLeft: 10 },
+  pointsSubtext: { color: COLORS.background, fontSize: 14 },
+  descriptionBox: { backgroundColor: COLORS.white, marginHorizontal: 20, padding: 20, borderRadius: 15, marginBottom: 20 },
+  descriptionText: { fontSize: 16, fontFamily: "sans-serif", lineHeight: 22, textAlign: "center" },
   optionsContainer: { paddingHorizontal: 20, gap: 15 },
-  rewardOption: {
-    backgroundColor: "#6B8E4E",
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    borderRadius: 20,
-    elevation: 2,
-  },
+  rewardOption: { backgroundColor: COLORS.primary, flexDirection: "row", alignItems: "center", padding: 15, borderRadius: 20, elevation: 2 },
   optionTextWrapper: { flex: 1, marginLeft: 15 },
-  optionTitle: { fontSize: 20, color: "#FFF", fontFamily: "serif" },
-  optionSub: { fontSize: 14, color: "#E8F5E9" },
+  optionTitle: { fontSize: 20, color: COLORS.white, fontFamily: "sans-serif" },
+  optionSub: { fontSize: 14, color: COLORS.primaryLight },
 });
