@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { db } from "../config/firebase";

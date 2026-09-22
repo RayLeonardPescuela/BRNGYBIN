@@ -5,8 +5,8 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import shared, { COLORS } from "../styles";

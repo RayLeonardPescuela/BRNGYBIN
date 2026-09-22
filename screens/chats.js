@@ -1,6 +1,7 @@
 import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { Text, View, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from "react-native";
+import { Text, View, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Navbar from "../components/Navbar";
 import shared, { COLORS } from "../styles";

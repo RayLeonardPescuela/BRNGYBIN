@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
@@ -42,8 +43,9 @@ export default function App() {
     return null;
   }
 
-  NavigationBar.setVisibilityAsync("hidden");
-  NavigationBar.setBorderColorAsync("transparent");
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   return (
     <UserProvider>

@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Image } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { useUser } from "../config/UserContext";

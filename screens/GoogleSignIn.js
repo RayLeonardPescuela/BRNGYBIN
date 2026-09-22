@@ -5,10 +5,10 @@ import {
   View,
   Image,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import firebase from "firebase/compat/app";

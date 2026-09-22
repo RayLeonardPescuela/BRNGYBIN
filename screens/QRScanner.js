@@ -4,13 +4,14 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
   Linking,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import firebase from "firebase/compat/app";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
 import shared, { COLORS } from "../styles";
@@ -66,15 +67,19 @@ export default function QRScanner({ navigation }) {
         return;
       }
 
-      if (rewardDoc.data().used) {
-        Alert.alert("Already Used", "This QR code has already been redeemed.", [
+      const rewardData = rewardDoc.data();
+
+      if (rewardData.scannedBy && rewardData.scannedBy.includes(user.uid)) {
+        Alert.alert("Already Scanned", "You have already redeemed this QR code.", [
           { text: "OK", onPress: () => setScanned(false) },
         ]);
         setLoading(false);
         return;
       }
 
-      await db.collection("rewards").doc(id).update({ used: true });
+      await db.collection("rewards").doc(id).update({
+        scannedBy: firebase.firestore.FieldValue.arrayUnion(user.uid),
+      });
 
       await db.collection("pointHistory").add({
         userId: user.uid,

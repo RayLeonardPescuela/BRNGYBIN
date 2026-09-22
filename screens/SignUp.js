@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   Text,
@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
-  SafeAreaView,
   Image,
   ActivityIndicator,
   ScrollView,
+  Modal,
+  FlatList,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { auth, db } from "../config/firebase";
@@ -20,7 +22,10 @@ export default function SignUp() {
   const navigation = useNavigation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [sitio, setSitio] = useState("");
+  const [selectedSitio, setSelectedSitio] = useState(null);
+  const [sitios, setSitios] = useState([]);
+  const [sitiosLoading, setSitiosLoading] = useState(true);
+  const [sitioModalVisible, setSitioModalVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,10 +33,26 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const fetchSitios = async () => {
+      try {
+        const doc = await db.collection("config").doc("sitios").get();
+        if (doc.exists) {
+          setSitios(doc.data().names || []);
+        }
+      } catch (err) {
+        console.log("Error fetching sitios:", err);
+      } finally {
+        setSitiosLoading(false);
+      }
+    };
+    fetchSitios();
+  }, []);
+
   const handleSignUp = async () => {
     setError("");
 
-    if (!name || !email || !sitio || !password || !confirmPassword) {
+    if (!name || !email || !selectedSitio || !password || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
@@ -43,11 +64,6 @@ export default function SignUp() {
 
     if (!email.includes("@") || !email.includes(".")) {
       setError("Please enter a valid email address");
-      return;
-    }
-
-    if (sitio.length < 2) {
-      setError("Please enter a valid sitio");
       return;
     }
 
@@ -63,13 +79,6 @@ export default function SignUp() {
 
     setLoading(true);
     try {
-      const emailCheck = await db.collection("users").where("email", "==", email).get();
-      if (!emailCheck.empty) {
-        setError("An account with this email already exists");
-        setLoading(false);
-        return;
-      }
-
       const userCredential = await auth.createUserWithEmailAndPassword(
         email,
         password
@@ -79,7 +88,7 @@ export default function SignUp() {
       await db.collection("users").doc(user.uid).set({
         name: name,
         email: email,
-        sitio: sitio,
+        sitio: selectedSitio,
         points: 0,
         role: "user",
         createdAt: new Date(),
@@ -87,18 +96,21 @@ export default function SignUp() {
 
       navigation.navigate("Home");
     } catch (error) {
+      console.log("Sign up error:", error.code, error.message);
       let message = "Sign up failed. Please try again.";
-      
+
       if (error.code === "auth/email-already-in-use") {
         message = "An account with this email already exists";
       } else if (error.code === "auth/invalid-email") {
         message = "Invalid email address format";
       } else if (error.code === "auth/weak-password") {
         message = "Password is too weak. Use at least 6 characters";
+      } else if (error.code === "auth/operation-not-allowed") {
+        message = "Email/password sign up is not enabled. Contact support.";
       } else if (error.code === "auth/network-request-failed") {
         message = "Network error. Check your connection";
       }
-      
+
       setError(message);
     } finally {
       setLoading(false);
@@ -171,22 +183,31 @@ export default function SignUp() {
             />
           </View>
 
-          <View style={styles.inputWrapper}>
+          {/* Sitio Selector */}
+          <TouchableOpacity
+            style={styles.inputWrapper}
+            onPress={() => setSitioModalVisible(true)}
+          >
             <MaterialCommunityIcons
               name="map-marker-outline"
               size={24}
               color="#3E2723"
               style={styles.inputIcon}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Sitio"
-              placeholderTextColor="#556B2F"
-              autoCapitalize="words"
-              value={sitio}
-              onChangeText={setSitio}
+            <Text
+              style={[
+                styles.input,
+                !selectedSitio && { color: "#556B2F" },
+              ]}
+            >
+              {selectedSitio || "Select Sitio"}
+            </Text>
+            <MaterialCommunityIcons
+              name="chevron-down"
+              size={24}
+              color="#3E2723"
             />
-          </View>
+          </TouchableOpacity>
 
           <View style={styles.inputWrapper}>
             <MaterialCommunityIcons
@@ -267,6 +288,58 @@ export default function SignUp() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Sitio Picker Modal */}
+      <Modal visible={sitioModalVisible} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBackdrop} />
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Sitio</Text>
+              <TouchableOpacity onPress={() => setSitioModalVisible(false)}>
+                <MaterialCommunityIcons name="close" size={26} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+            </View>
+            {sitiosLoading ? (
+              <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
+            ) : sitios.length === 0 ? (
+              <View style={styles.modalEmpty}>
+                <MaterialCommunityIcons name="map-marker-off" size={40} color={COLORS.textMuted} />
+                <Text style={styles.noSitiosText}>No sitios available. Contact admin.</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={sitios}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.modalOption,
+                      selectedSitio === item && styles.modalOptionActive,
+                    ]}
+                    onPress={() => {
+                      setSelectedSitio(item);
+                      setSitioModalVisible(false);
+                    }}
+                  >
+                    <View style={styles.radioCircle}>
+                      {selectedSitio === item && <View style={styles.radioSelected} />}
+                    </View>
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        selectedSitio === item && styles.modalOptionTextActive,
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -290,4 +363,84 @@ const styles = StyleSheet.create({
   loginContainer: { marginTop: 20 },
   loginText: { fontSize: 16, fontFamily: "sans-serif", color: COLORS.textDark },
   loginBold: { fontWeight: "bold", textDecorationLine: "underline" },
+
+  // Sitio modal
+  noSitiosText: {
+    fontSize: 14,
+    fontFamily: "sans-serif",
+    color: COLORS.textMuted,
+    textAlign: "center",
+    paddingVertical: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: COLORS.overlay,
+    justifyContent: "flex-end",
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modalContent: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    maxHeight: "60%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.inputBorder,
+    marginBottom: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    fontFamily: "sans-serif",
+    color: COLORS.textDark,
+  },
+  modalEmpty: {
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  modalOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+    gap: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.inputBorder,
+  },
+  modalOptionActive: {
+    backgroundColor: COLORS.primaryLight,
+  },
+  modalOptionText: {
+    fontSize: 16,
+    fontFamily: "sans-serif",
+    color: COLORS.textDark,
+  },
+  modalOptionTextActive: {
+    fontWeight: "bold",
+    color: COLORS.primary,
+  },
+  radioCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  radioSelected: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: COLORS.primary,
+  },
 });

@@ -5,12 +5,14 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
-  SafeAreaView,
   Alert,
   ScrollView,
   Image,
   ActivityIndicator,
+  Linking,
+  Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
 import shared, { COLORS } from "../styles";
@@ -35,7 +37,7 @@ export default function QRGenerator({ navigation }) {
         description: description || `Reward for ${points} points`,
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        used: false,
+        scannedBy: [],
       };
 
       const docRef = await db.collection("rewards").add(rewardData);
@@ -67,6 +69,24 @@ export default function QRGenerator({ navigation }) {
     setDescription("");
     setQrImage(null);
     setGenerated(false);
+  };
+
+  const downloadQR = async () => {
+    if (!qrImage) return;
+    try {
+      if (Platform.OS === "web") {
+        const link = document.createElement("a");
+        link.href = qrImage;
+        link.download = `qr-reward-${points}pts.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        await Linking.openURL(qrImage);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to download QR code");
+    }
   };
 
   return (
@@ -144,6 +164,11 @@ export default function QRGenerator({ navigation }) {
                 </Text>
               </View>
 
+              <TouchableOpacity style={styles.downloadBtn} onPress={downloadQR}>
+                <MaterialCommunityIcons name="download" size={20} color="#FFF" />
+                <Text style={styles.downloadBtnText}>Download QR Code</Text>
+              </TouchableOpacity>
+
               <View style={styles.actions}>
                 <TouchableOpacity style={styles.resetBtn} onPress={resetGenerator}>
                   <MaterialCommunityIcons name="refresh" size={20} color="#333" />
@@ -180,7 +205,9 @@ const styles = StyleSheet.create({
   qrExpiry: { fontSize: 14, fontFamily: "sans-serif", color: COLORS.error, marginBottom: 20 },
   infoCard: { flexDirection: "row", backgroundColor: COLORS.blue, borderRadius: 15, padding: 15, marginBottom: 25, gap: 10 },
   infoText: { flex: 1, fontSize: 14, fontFamily: "sans-serif", color: COLORS.textPrimary, lineHeight: 20 },
-  actions: { flexDirection: "row", gap: 15 },
+  actions: { flexDirection: "row", gap: 10, marginTop: 10 },
+  downloadBtn: { flexDirection: "row", backgroundColor: COLORS.primary, paddingVertical: 12, borderRadius: 25, justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 5 },
+  downloadBtnText: { fontSize: 14, fontFamily: "sans-serif", fontWeight: "bold", color: COLORS.white },
   resetBtn: { flex: 1, flexDirection: "row", backgroundColor: COLORS.white, paddingVertical: 12, borderRadius: 25, justifyContent: "center", alignItems: "center", gap: 8, elevation: 2 },
   resetBtnText: { fontSize: 16, fontFamily: "sans-serif", fontWeight: "600" },
   doneBtn: [shared.primaryButton, { flex: 1, paddingVertical: 12, borderRadius: 25 }],

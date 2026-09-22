@@ -5,12 +5,18 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   ActivityIndicator,
+  Alert,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { db } from "../config/firebase";
+import { useUser } from "../config/UserContext";
 import shared, { COLORS } from "../styles";
 
 const colors = [
@@ -22,12 +28,25 @@ const colors = [
 ];
 
 export default function CleaningSchedule({ navigation }) {
+  const { userData } = useUser();
+  const isAdmin = userData?.role === "admin";
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Edit modal
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState(null);
+  const [editArea, setEditArea] = useState("");
+  const [editTime, setEditTime] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editNote, setEditNote] = useState("");
+  const [saving, setSaving] = useState(false);
+
   useEffect(() => {
-    fetchSchedules();
-  }, []);
+    if (userData !== undefined) {
+      fetchSchedules();
+    }
+  }, [userData]);
 
   const fetchSchedules = async () => {
     try {
@@ -45,6 +64,56 @@ export default function CleaningSchedule({ navigation }) {
       console.log("Error fetching schedules:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteSchedule = (id) => {
+    Alert.alert("Delete Schedule", "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await db.collection("schedules").doc(id).delete();
+            fetchSchedules();
+          } catch (error) {
+            Alert.alert("Error", "Failed to delete");
+          }
+        },
+      },
+    ]);
+  };
+
+  const openEditModal = (schedule) => {
+    setEditingSchedule(schedule);
+    setEditArea(schedule.area || "");
+    setEditDate(schedule.date || "");
+    setEditTime(schedule.time || "");
+    setEditNote(schedule.note || "");
+    setEditModalVisible(true);
+  };
+
+  const saveEdit = async () => {
+    if (!editArea.trim() || !editDate.trim() || !editTime.trim()) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+    setSaving(true);
+    try {
+      await db.collection("schedules").doc(editingSchedule.id).update({
+        area: editArea.trim(),
+        date: editDate.trim(),
+        time: editTime.trim(),
+        note: editNote.trim(),
+      });
+      setEditModalVisible(false);
+      setEditingSchedule(null);
+      fetchSchedules();
+    } catch (error) {
+      Alert.alert("Error", "Failed to save changes");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -115,6 +184,16 @@ export default function CleaningSchedule({ navigation }) {
                     <MaterialCommunityIcons name="clock-outline" size={14} color="#FFF" />
                     <Text style={styles.timeText}>{item.time}</Text>
                   </View>
+                  {isAdmin && (
+                    <View style={styles.adminActions}>
+                      <TouchableOpacity onPress={() => openEditModal(item)}>
+                        <MaterialCommunityIcons name="pencil" size={18} color="#FFF" />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => deleteSchedule(item.id)}>
+                        <MaterialCommunityIcons name="delete" size={18} color="#FFF" />
+                      </TouchableOpacity>
+                    </View>
+                  )}
                 </View>
               </View>
             );
@@ -123,6 +202,66 @@ export default function CleaningSchedule({ navigation }) {
       )}
 
       <Navbar />
+
+      {/* Edit Modal */}
+      <Modal visible={editModalVisible} animationType="slide" transparent>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setEditModalVisible(false)} />
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Cleaning Schedule</Text>
+
+            <Text style={styles.modalLabel}>Area</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editArea}
+              onChangeText={setEditArea}
+              placeholder="Enter area"
+              placeholderTextColor={COLORS.textMuted}
+            />
+
+            <Text style={styles.modalLabel}>Date (YYYY-MM-DD)</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editDate}
+              onChangeText={setEditDate}
+              placeholder="2026-09-12"
+              placeholderTextColor={COLORS.textMuted}
+            />
+
+            <Text style={styles.modalLabel}>Time</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editTime}
+              onChangeText={setEditTime}
+              placeholder="Enter time"
+              placeholderTextColor={COLORS.textMuted}
+            />
+
+            <Text style={styles.modalLabel}>Note (optional)</Text>
+            <TextInput
+              style={[styles.modalInput, { height: 70, textAlignVertical: "top" }]}
+              value={editNote}
+              onChangeText={setEditNote}
+              placeholder="Add a note..."
+              placeholderTextColor={COLORS.textMuted}
+              multiline
+              numberOfLines={3}
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditModalVisible(false)}>
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.saveBtn} onPress={saveEdit} disabled={saving}>
+                {saving ? <ActivityIndicator color={COLORS.white} /> : <Text style={styles.saveBtnText}>Save</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -145,6 +284,20 @@ const styles = StyleSheet.create({
   areaText: { fontSize: 11, fontWeight: "bold", fontFamily: "sans-serif" },
   iconRow: { marginBottom: 5 },
   scheduleLabel: { color: COLORS.white, fontSize: 11, fontFamily: "sans-serif", fontWeight: "600", marginBottom: 5, textAlign: "center" },
+  adminActions: { flexDirection: "row", gap: 12, marginTop: 8, justifyContent: "center" },
   timeRow: { flexDirection: "row", alignItems: "center", gap: 3 },
   timeText: { color: COLORS.white, fontSize: 9, fontFamily: "sans-serif" },
+
+  // Modal
+  modalOverlay: { flex: 1, backgroundColor: COLORS.overlay, justifyContent: "center", paddingHorizontal: 20 },
+  modalBackdrop: { ...StyleSheet.absoluteFillObject },
+  modalContent: { backgroundColor: COLORS.white, borderRadius: 20, padding: 25, zIndex: 1 },
+  modalTitle: { fontSize: 22, fontWeight: "bold", fontFamily: "sans-serif", marginBottom: 15, textAlign: "center" },
+  modalLabel: { fontSize: 14, fontFamily: "sans-serif", marginBottom: 6, color: COLORS.textPrimary },
+  modalInput: { backgroundColor: COLORS.inputBg, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, fontFamily: "sans-serif", marginBottom: 12 },
+  modalActions: { flexDirection: "row", justifyContent: "space-between", marginTop: 15, gap: 15 },
+  cancelBtn: { flex: 1, backgroundColor: COLORS.cancelBg, paddingVertical: 14, borderRadius: 10, alignItems: "center" },
+  cancelBtnText: { fontWeight: "bold", fontFamily: "sans-serif", fontSize: 16 },
+  saveBtn: { flex: 1, backgroundColor: COLORS.primary, paddingVertical: 14, borderRadius: 10, alignItems: "center" },
+  saveBtnText: { color: COLORS.white, fontWeight: "bold", fontFamily: "sans-serif", fontSize: 16 },
 });

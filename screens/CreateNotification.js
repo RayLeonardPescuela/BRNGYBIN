@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
 import { useUser } from "../config/UserContext";
@@ -20,6 +20,8 @@ export default function CreateNotification({ navigation }) {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [type, setType] = useState("collection");
+  const [sitios, setSitios] = useState([]);
+  const [selectedSitio, setSelectedSitio] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const types = [
@@ -29,6 +31,20 @@ export default function CreateNotification({ navigation }) {
     { key: "reward", label: "Reward", icon: "medal" },
     { key: "general", label: "General", icon: "bell" },
   ];
+
+  useEffect(() => {
+    const fetchSitios = async () => {
+      try {
+        const doc = await db.collection("config").doc("sitios").get();
+        if (doc.exists) {
+          setSitios(doc.data().names || []);
+        }
+      } catch (error) {
+        console.log("Error fetching sitios:", error);
+      }
+    };
+    fetchSitios();
+  }, []);
 
   const sendNotification = async () => {
     if (!title.trim() || !message.trim()) {
@@ -42,12 +58,13 @@ export default function CreateNotification({ navigation }) {
         title: title.trim(),
         message: message.trim(),
         type,
+        sitio: selectedSitio || "",
         sentBy: userData?.name || "Admin",
         createdAt: new Date().toISOString(),
         read: false,
       });
 
-      Alert.alert("Success", "Notification sent to all users!");
+      Alert.alert("Success", "Notification sent!");
       setTitle("");
       setMessage("");
       navigation.goBack();
@@ -125,6 +142,30 @@ export default function CreateNotification({ navigation }) {
           textAlignVertical="top"
         />
 
+        {/* Sitio Selector */}
+        <Text style={styles.label}>Sitio</Text>
+        <View style={styles.sitioSection}>
+          <TouchableOpacity
+            style={[styles.sitioChip, selectedSitio === "" && styles.sitioChipActive]}
+            onPress={() => setSelectedSitio("")}
+          >
+            <Text style={[styles.sitioChipText, selectedSitio === "" && styles.sitioChipTextActive]}>
+              All Sitios
+            </Text>
+          </TouchableOpacity>
+          {sitios.map((name, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.sitioChip, selectedSitio === name && styles.sitioChipActive]}
+              onPress={() => setSelectedSitio(name)}
+            >
+              <Text style={[styles.sitioChipText, selectedSitio === name && styles.sitioChipTextActive]}>
+                {name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         {/* Send Button */}
         <TouchableOpacity
           style={[styles.submitButton, submitting && { opacity: 0.6 }]}
@@ -160,4 +201,33 @@ const styles = StyleSheet.create({
   messageInput: { height: 140 },
   submitButton: [shared.primaryButton, { flexDirection: "row", justifyContent: "center", paddingVertical: 16, borderRadius: 30, gap: 10, marginTop: 10 }],
   submitText: [shared.primaryButtonText, { fontSize: 20 }],
+
+  // Sitio selector
+  sitioSection: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 20,
+  },
+  sitioChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.inputBorder,
+  },
+  sitioChipActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  sitioChipText: {
+    fontSize: 14,
+    fontFamily: "sans-serif",
+    color: COLORS.textPrimary,
+  },
+  sitioChipTextActive: {
+    color: COLORS.white,
+    fontWeight: "bold",
+  },
 });

@@ -6,3 +6,4 @@ dist
 build
 *.log
 .git
+google-services.json

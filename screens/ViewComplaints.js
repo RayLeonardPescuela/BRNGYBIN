@@ -5,9 +5,9 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  SafeAreaView,
   Alert,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { db } from "../config/firebase";
 import shared, { COLORS } from "../styles";
@@ -272,8 +272,8 @@ const styles = StyleSheet.create({
   activeTabText: shared.tabTextActive,
   center: shared.center,
   loadingText: shared.loadingText,
-  listContent: { paddingHorizontal: 20, paddingBottom: 40 },
-  card: shared.card,
+  listContent: { paddingHorizontal: 20, paddingBottom: 40, paddingTop: 10 },
+  card: [shared.card, { marginBottom: 12 }],
   cardHeader: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   cardMeta: { flex: 1, marginLeft: 10 },
   cardUser: { fontSize: 15, fontWeight: "bold", fontFamily: "sans-serif" },

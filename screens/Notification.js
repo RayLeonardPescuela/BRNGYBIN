@@ -5,9 +5,9 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Navbar from "../components/Navbar";
 import { db } from "../config/firebase";
@@ -20,22 +20,31 @@ export default function Notification({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    if (userData !== undefined) {
+      fetchNotifications();
+    }
+  }, [userData]);
 
   const fetchNotifications = async () => {
     try {
       const snapshot = await db
         .collection("notifications")
         .orderBy("createdAt", "desc")
-        .limit(20)
+        .limit(50)
         .get();
 
       const data = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setNotifications(data);
+
+      // Filter by user's sitio (show notifications with matching sitio or no sitio / "All Sitios")
+      const userSitio = userData?.sitio;
+      const filtered = userSitio
+        ? data.filter((n) => !n.sitio || n.sitio === "" || n.sitio === userSitio)
+        : data;
+
+      setNotifications(filtered.slice(0, 20));
     } catch (error) {
       console.log("Error fetching notifications:", error);
     } finally {
